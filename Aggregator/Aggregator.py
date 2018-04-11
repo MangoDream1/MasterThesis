@@ -1,4 +1,5 @@
 from collections import defaultdict
+import networkx as nx
 
 
 class Aggregator:
@@ -7,6 +8,8 @@ class Aggregator:
 
         self.tx_block = {}
         self.end_balance = {}
+        self.networks = {}
+
         self.split_into_blocks(time_block)
 
     def split_into_blocks(self, time_block):
@@ -18,7 +21,7 @@ class Aggregator:
         """
 
         self.transactions.extend(sum(self.tx_block.values(), []))
-        self.transactions = sorted(self.transactions, key=lambda x: x.timestamp)
+        self.transactions = sorted(self.transactions, key=lambda tx: tx.timestamp)
         self.tx_block = defaultdict(list)
 
         if time_block == 0 or not time_block:
@@ -41,6 +44,7 @@ class Aggregator:
                 break
 
         self.blocks_end_balance()
+        self.create_networks()
 
     def blocks_end_balance(self):
         """
@@ -54,3 +58,15 @@ class Aggregator:
             for tx in v:
                 self.end_balance[k][tx.to] += tx.amount
                 self.end_balance[k][tx.fr] -= tx.amount
+
+    def create_networks(self):
+        """
+        Creates networks for each block and saves in self.network with same key as self.tx_block
+        :return:
+        """
+        for k, v in self.tx_block.items():
+            DG = nx.DiGraph()
+            edges = [tx.get_graph_edge() for tx in v]
+            DG.add_weighted_edges_from(edges)
+
+            self.networks[k] = DG
