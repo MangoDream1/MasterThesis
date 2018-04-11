@@ -27,9 +27,6 @@ class Aggregator:
         time = max_time - min_time
         amount = int(time / time_block)
 
-        print(time)
-        print(amount)
-
         for i, x in enumerate(range(amount)):
             limit = min_time + (i+1) * time_block
 
