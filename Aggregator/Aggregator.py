@@ -3,13 +3,11 @@ from collections import defaultdict
 
 class Aggregator:
     def __init__(self, transactions, time_block):
-        self.transactions = sorted(transactions, key=lambda x: x.timestamp)
+        self.transactions = transactions
 
-        self.tx_block = defaultdict(list)
-        self.end_balance = defaultdict(lambda: defaultdict(int))
-
+        self.tx_block = {}
+        self.end_balance = {}
         self.split_into_blocks(time_block)
-        self.blocks_end_balance()
 
     def split_into_blocks(self, time_block):
         """
@@ -18,9 +16,14 @@ class Aggregator:
         :param time_block: size of each time block
         :return:
         """
+
+        self.transactions.extend(sum(self.tx_block.values(), []))
+        self.transactions = sorted(self.transactions, key=lambda x: x.timestamp)
+        self.tx_block = defaultdict(list)
+
         if time_block == 0 or not time_block:
             self.tx_block[0] = self.transactions
-            del self.transactions
+            self.transactions = []
             return
 
         min_time, max_time = self.transactions[0].timestamp, self.transactions[-1].timestamp
@@ -37,11 +40,15 @@ class Aggregator:
 
                 break
 
+        self.blocks_end_balance()
+
     def blocks_end_balance(self):
         """
         Calculates the end balance for each actor in each block
         :return:
         """
+
+        self.end_balance = defaultdict(lambda: defaultdict(int))
 
         for k, v in self.tx_block.items():
             for tx in v:
