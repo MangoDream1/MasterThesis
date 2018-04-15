@@ -1,16 +1,19 @@
 from collections import defaultdict
 import networkx as nx
 import numpy as np
+from Objects.Transaction import Transaction
+from random import choice
 
 
 class Aggregator:
     def __init__(self, transactions, time_block):
         self.transactions = transactions
 
-        self.tx_block = {}
         self.end_balance = {}
+
         self.networks = {}
         self.block_actors = {}
+        self.block_limit = {}
 
         self.split_into_blocks(time_block)
 
@@ -22,31 +25,37 @@ class Aggregator:
         :return:
         """
 
-        self.transactions.extend(sum(self.tx_block.values(), []))
         self.transactions = sorted(self.transactions, key=lambda tx: tx.timestamp)
-        self.tx_block = defaultdict(list)
+        tx_block = defaultdict(list)
 
         if time_block == 0 or not time_block:
-            self.tx_block[0] = self.transactions
+            tx_block[0] = self.transactions
             self.transactions = []
         else:
             min_time, max_time = self.transactions[0].timestamp, self.transactions[-1].timestamp
             time = max_time - min_time
             amount = int(time / time_block)
 
+            transactions = []
+
             for i, x in enumerate(range(amount)):
                 limit = min_time + (i+1) * time_block
+                self.block_limit[i] = limit
 
                 while True:
                     if self.transactions[0].timestamp < limit:
-                        self.tx_block[i].append(self.transactions.pop(0))
+                        popped = self.transactions.pop(0)
+                        tx_block[i].append(popped)
+                        transactions.append(popped)
                         continue
 
                     break
 
+            self.transactions = transactions
+
+        self._create_networks(tx_block)
         self._all_block_actors()
         self._blocks_end_balance()
-        self._create_networks()
 
     def all_block_cost(self, **kwargs):
         """
@@ -54,8 +63,8 @@ class Aggregator:
         :param kwargs: self.block_cost keyword params
         :return: 
         """
-        for k in self.tx_block.keys():
-            self.block_cost(k, **kwargs)
+
+        return [self.block_cost(k, **kwargs) for k in self.networks.keys()]
 
     def block_cost(self, block_number, transaction_cost=100, balance_diff_multiplier=4):
         """
@@ -69,9 +78,9 @@ class Aggregator:
         end_balance = self._calculate_end_balance(block_number)
         diff = sum(np.absolute(end_balance - self.end_balance[block_number]))
 
-        n_transactions = len(self.tx_block[block_number])
+        n_transactions = self.networks[block_number].number_of_edges()
 
-        return diff * balance_diff_multiplier + n_transactions * transaction_cost
+        return diff * balance_diff_multiplier, n_transactions * transaction_cost
 
     def _all_block_actors(self):
         """
@@ -81,10 +90,10 @@ class Aggregator:
 
         self.block_actors = defaultdict(lambda: defaultdict(int))
 
-        for k, v in self.tx_block.items():
+        for k, network in self.networks.items():
             actors = []
-            for tx in v:
-                actors.extend([tx.to, tx.fr])
+            for to, fr in network.edges():
+                actors.extend([to, fr])
 
             for i, a in enumerate(set(actors)):
                 self.block_actors[k][a] = i
@@ -96,7 +105,7 @@ class Aggregator:
         """
 
         self.end_balance = {}
-        for k in self.tx_block.keys():
+        for k in self.networks.keys():
             self.end_balance[k] = self._calculate_end_balance(k)
 
     def _calculate_end_balance(self, block_number):
@@ -108,23 +117,40 @@ class Aggregator:
 
         actors = self.block_actors[block_number]
         array = np.zeros(len(actors), dtype=int)
-        block = self.tx_block[block_number]
+        network = self.networks[block_number]
 
-        for tx in block:
-            array[actors[tx.to]] += tx.amount
-            array[actors[tx.fr]] -= tx.amount
+        for to, fr, amount in network.edges.data('weight'):
+            array[actors[to]] += amount
+            array[actors[fr]] -= amount
 
         return array
 
-    def _create_networks(self):
+    def _create_networks(self, tx_block):
         """
-        Creates networks for each block and saves in self.network with same key as self.tx_block
+        Creates networks for each block and saves in self.network with same key as tx_block
+        :param tx_block: nested list with all transactions per block
         :return:
         """
 
-        for k, v in self.tx_block.items():
+        for k, v in tx_block.items():
             directed_graph = nx.DiGraph()
             edges = [tx.get_graph_edge() for tx in v]
             directed_graph.add_weighted_edges_from(edges)
 
             self.networks[k] = directed_graph
+
+    # def _add_random_transaction(self, block_number, balance_diff_cost):
+    #     actors = self.block_actors[block_number].keys()
+    #     to = choice(actors)
+    #     fr = choice(actors)
+    #
+    #     while fr == to:
+    #         to = choice(actors)
+    #
+    #     # FIXME find a better amount relative to the cost
+    #     amount = 1
+    #
+    #     self.tx_block[block_number].append(Transaction(to, fr, amount, self.block_limit[block_number]))
+    #
+    # def _join_equal_transaction(self, block_number):
+    #     block = self.tx_block[block_number]
