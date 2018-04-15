@@ -22,7 +22,7 @@ class SimulatedTransaction(Transaction):
 
     @staticmethod
     def _generate_amount(mean, standard_deviation):
-        return abs(normalvariate(mean, standard_deviation))
+        return int(abs(normalvariate(mean, standard_deviation)))
 
     @staticmethod
     def _generate_timestamp(_max):
