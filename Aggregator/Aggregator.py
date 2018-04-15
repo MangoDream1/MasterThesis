@@ -1,7 +1,6 @@
 from collections import defaultdict
 import networkx as nx
 import numpy as np
-from Objects.Transaction import Transaction
 from random import choice
 
 
@@ -135,22 +134,32 @@ class Aggregator:
         for k, v in tx_block.items():
             directed_graph = nx.DiGraph()
             edges = [tx.get_graph_edge() for tx in v]
+
+            # joins edges from and to same location
+            joined = defaultdict(int)
+            for to, fr, amount in edges:
+                joined[(to, fr)] += amount
+
+            edges = [(to, fr, amount) for (to, fr), amount in joined.items()]
             directed_graph.add_weighted_edges_from(edges)
 
             self.networks[k] = directed_graph
 
-    # def _add_random_transaction(self, block_number, balance_diff_cost):
-    #     actors = self.block_actors[block_number].keys()
-    #     to = choice(actors)
-    #     fr = choice(actors)
-    #
-    #     while fr == to:
-    #         to = choice(actors)
-    #
-    #     # FIXME find a better amount relative to the cost
-    #     amount = 1
-    #
-    #     self.tx_block[block_number].append(Transaction(to, fr, amount, self.block_limit[block_number]))
-    #
-    # def _join_equal_transaction(self, block_number):
-    #     block = self.tx_block[block_number]
+    def _add_random_transaction(self, block_number, balance_diff_cost):
+        actors = self.block_actors[block_number].keys()
+        network = self.networks[block_number]
+
+        to = choice(actors)
+        fr = choice(actors)
+
+        while fr == to:
+            to = choice(actors)
+
+        # FIXME find a better amount relative to the cost
+        amount = 1
+
+        # If edge already exists add to the edge
+        if network.number_of_edges(to, fr) > 0:
+            network[to][fr]["weight"] += amount
+        else:
+            network.add_edge(to, fr, weight=amount)
