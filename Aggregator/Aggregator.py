@@ -17,6 +17,7 @@ class Aggregator:
         self.transaction_cost = transaction_cost
         self.balance_diff_multiplier = balance_diff_multiplier
 
+    # TODO separate from Aggregator class
     def simple_hill_climber(self, block_number):
         print("Pre-cost", sum(self.block_cost(block_number)))
 
@@ -187,6 +188,7 @@ class Aggregator:
         while fr == to:
             to = choice(actors)
 
+        # FIXME find better way to do this
         amount = int(normalvariate(0, 100))
 
         # If edge already exists add to the edge, if weight less than 0 remove edge
