@@ -1,20 +1,56 @@
 from collections import defaultdict
 import networkx as nx
 import numpy as np
-from random import choice
+from random import *
 
 
 class Aggregator:
-    def __init__(self, transactions, time_block):
+    def __init__(self, transactions, time_block, transaction_cost=100, balance_diff_multiplier=10):
         self.transactions = transactions
 
-        self.end_balance = {}
-
+        self.goal_balance = {}
         self.networks = {}
         self.block_actors = {}
-        self.block_limit = {}
 
         self.split_into_blocks(time_block)
+
+        self.transaction_cost = transaction_cost
+        self.balance_diff_multiplier = balance_diff_multiplier
+
+    def simple_hill_climber(self, block_number):
+        print("Pre-cost", sum(self.block_cost(block_number)))
+
+        network = self.networks[block_number]
+        network.remove_edges_from(list(network.edges()))
+
+        diff_cost, tx_cost = self.block_cost(block_number)
+        cost = diff_cost + tx_cost
+
+        non_improvement = 0
+        i = 0
+
+        print("Init cost %s" % cost, diff_cost, tx_cost )
+
+        while non_improvement <= 1000 and cost != 0:
+            old_network = self.networks[block_number].copy()
+
+            self._add_random_transaction(block_number, diff_cost)
+            n_diff_cost, n_tx_cost = self.block_cost(block_number)
+            n_cost = n_diff_cost + n_tx_cost
+
+            if n_cost > cost:
+                non_improvement += 1
+                self.networks[block_number] = old_network
+            else:
+                i += 1
+                non_improvement = 0
+                diff_cost = n_diff_cost
+                cost = n_cost
+
+            # print("Iteration: %s Cost: %s Edges: %s" % (i, cost, self.networks[block_number].number_of_edges()))
+
+        print("Last cost %s" % cost, diff_cost, tx_cost)
+
 
     def split_into_blocks(self, time_block):
         """
@@ -39,7 +75,6 @@ class Aggregator:
 
             for i, x in enumerate(range(amount)):
                 limit = min_time + (i+1) * time_block
-                self.block_limit[i] = limit
 
                 while True:
                     if self.transactions[0].timestamp < limit:
@@ -56,30 +91,27 @@ class Aggregator:
         self._all_block_actors()
         self._blocks_end_balance()
 
-    def all_block_cost(self, **kwargs):
+    def all_block_cost(self):
         """
         Calculate all block costs
-        :param kwargs: self.block_cost keyword params
         :return: 
         """
 
-        return [self.block_cost(k, **kwargs) for k in self.networks.keys()]
+        return [self.block_cost(k) for k in self.networks.keys()]
 
-    def block_cost(self, block_number, transaction_cost=100, balance_diff_multiplier=4):
+    def block_cost(self, block_number):
         """
         Calculates the cost of a block
         :param block_number: The block
-        :param transaction_cost: the cost per transaction
-        :param balance_diff_multiplier: the multiplier of difference between wanted end balance and block end balance
         :return: 
         """
 
         end_balance = self._calculate_end_balance(block_number)
-        diff = sum(np.absolute(end_balance - self.end_balance[block_number]))
+        diff = sum(np.absolute(end_balance - self.goal_balance[block_number]))
 
         n_transactions = self.networks[block_number].number_of_edges()
 
-        return diff * balance_diff_multiplier, n_transactions * transaction_cost
+        return diff * self.balance_diff_multiplier, n_transactions * self.transaction_cost
 
     def _all_block_actors(self):
         """
@@ -103,9 +135,9 @@ class Aggregator:
         :return:
         """
 
-        self.end_balance = {}
+        self.goal_balance = {}
         for k in self.networks.keys():
-            self.end_balance[k] = self._calculate_end_balance(k)
+            self.goal_balance[k] = self._calculate_end_balance(k)
 
     def _calculate_end_balance(self, block_number):
         """
@@ -146,7 +178,7 @@ class Aggregator:
             self.networks[k] = directed_graph
 
     def _add_random_transaction(self, block_number, balance_diff_cost):
-        actors = self.block_actors[block_number].keys()
+        actors = list(self.block_actors[block_number].keys())
         network = self.networks[block_number]
 
         to = choice(actors)
@@ -155,11 +187,17 @@ class Aggregator:
         while fr == to:
             to = choice(actors)
 
-        # FIXME find a better amount relative to the cost
-        amount = 1
+        amount = int(normalvariate(0, 100))
 
-        # If edge already exists add to the edge
+        # If edge already exists add to the edge, if weight less than 0 remove edge
         if network.number_of_edges(to, fr) > 0:
-            network[to][fr]["weight"] += amount
-        else:
-            network.add_edge(to, fr, weight=amount)
+            weight = network[to][fr]["weight"] + amount
+
+            if weight <= 0:
+                network.remove_edge(to, fr)
+                return
+
+            network[to][fr]["weight"] = weight
+            return
+
+        network.add_edge(to, fr, weight=amount)
