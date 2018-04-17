@@ -58,6 +58,8 @@ class Aggregator:
             # print("Iteration: %s Cost: %s Edges: %s" % (i, cost, self.networks[block_number].number_of_edges()))
 
         self.matrices[block_number] = matrix
+        self.networks[block_number] = nx.from_scipy_sparse_matrix(matrix, create_using=nx.DiGraph())
+
         print("Last cost %s" % cost, diff_cost, tx_cost)
 
     def split_into_blocks(self, time_block):
