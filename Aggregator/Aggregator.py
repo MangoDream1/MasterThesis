@@ -1,6 +1,7 @@
 from collections import defaultdict
 import networkx as nx
 import numpy as np
+import scipy as sc
 from random import *
 
 
@@ -9,8 +10,10 @@ class Aggregator:
         self.transactions = transactions
 
         self.goal_balance = {}
-        self.networks = {}
         self.block_actors = {}
+
+        self.networks = {}
+        self.matrices = {}
 
         self.split_into_blocks(time_block)
 
@@ -19,12 +22,15 @@ class Aggregator:
 
     # TODO separate from Aggregator class
     def simple_hill_climber(self, block_number):
-        print("Pre-cost", sum(self.block_cost(block_number)))
+        matrix = self.matrices[block_number]
+        goal_balance = self.goal_balance[block_number]
 
-        network = self.networks[block_number]
-        network.remove_edges_from(list(network.edges()))
+        print("Pre-cost", self.block_cost(matrix, goal_balance))
 
-        diff_cost, tx_cost = self.block_cost(block_number)
+        # Random matrix for init
+        matrix = sc.sparse.random(*matrix.shape).tolil()
+
+        diff_cost, tx_cost = self.block_cost(matrix, goal_balance)
         cost = diff_cost + tx_cost
 
         non_improvement = 0
@@ -33,25 +39,26 @@ class Aggregator:
         print("Init cost %s" % cost, diff_cost, tx_cost )
 
         while non_improvement <= 1000 and cost != 0:
-            old_network = self.networks[block_number].copy()
+            old_matrix = matrix.copy()
+            matrix = self._add_random_transaction(matrix, diff_cost)
 
-            self._add_random_transaction(block_number, diff_cost)
-            n_diff_cost, n_tx_cost = self.block_cost(block_number)
+            n_diff_cost, n_tx_cost = self.block_cost(matrix, goal_balance)
             n_cost = n_diff_cost + n_tx_cost
 
-            if n_cost > cost:
+            if n_cost >= cost:
                 non_improvement += 1
-                self.networks[block_number] = old_network
+                matrix = old_matrix
             else:
                 i += 1
                 non_improvement = 0
                 diff_cost = n_diff_cost
+                tx_cost = n_tx_cost
                 cost = n_cost
 
             # print("Iteration: %s Cost: %s Edges: %s" % (i, cost, self.networks[block_number].number_of_edges()))
 
+        self.matrices[block_number] = matrix
         print("Last cost %s" % cost, diff_cost, tx_cost)
-
 
     def split_into_blocks(self, time_block):
         """
@@ -90,7 +97,7 @@ class Aggregator:
 
         self._create_networks(tx_block)
         self._all_block_actors()
-        self._blocks_end_balance()
+        self._blocks_goal_balance()
 
     def all_block_cost(self):
         """
@@ -98,19 +105,18 @@ class Aggregator:
         :return: 
         """
 
-        return [self.block_cost(k) for k in self.networks.keys()]
+        return [self.block_cost(self.goal_balance[k], matrix) for k, matrix in self.matrices.items()]
 
-    def block_cost(self, block_number):
+    def block_cost(self, matrix, goal_balance):
         """
         Calculates the cost of a block
-        :param block_number: The block
-        :return: 
+        :param matrix: the graph matrix
+        :param goal_balance: the balance that is being compared to
+        :return:
         """
 
-        end_balance = self._calculate_end_balance(block_number)
-        diff = sum(np.absolute(end_balance - self.goal_balance[block_number]))
-
-        n_transactions = self.networks[block_number].number_of_edges()
+        diff = sum(np.absolute(self._calculate_end_balance(matrix) - goal_balance))
+        n_transactions = matrix.count_nonzero()
 
         return diff * self.balance_diff_multiplier, n_transactions * self.transaction_cost
 
@@ -130,32 +136,24 @@ class Aggregator:
             for i, a in enumerate(set(actors)):
                 self.block_actors[k][a] = i
 
-    def _blocks_end_balance(self):
+    def _blocks_goal_balance(self):
         """
         Calculates the end balance for each actor in each block
         :return:
         """
 
         self.goal_balance = {}
-        for k in self.networks.keys():
-            self.goal_balance[k] = self._calculate_end_balance(k)
+        for k, matrix in self.matrices.items():
+            self.goal_balance[k] = self._calculate_end_balance(matrix)
 
-    def _calculate_end_balance(self, block_number):
+    def _calculate_end_balance(self, matrix):
         """
-        Returns an np.array with the end balance, using self.block_actors for array order
-        :param block_number: block number to be calculated
-        :return: 
+        Returns an np.array with the end balance
+        :param matrix: network matrix
+        :return: array with end balances of all actors using same order as DiGraph.nodes
         """
 
-        actors = self.block_actors[block_number]
-        array = np.zeros(len(actors), dtype=int)
-        network = self.networks[block_number]
-
-        for to, fr, amount in network.edges.data('weight'):
-            array[actors[to]] += amount
-            array[actors[fr]] -= amount
-
-        return array
+        return np.array([matrix[:, i].sum() - row.sum() for i, row in enumerate(matrix)])
 
     def _create_networks(self, tx_block):
         """
@@ -177,29 +175,19 @@ class Aggregator:
             directed_graph.add_weighted_edges_from(edges)
 
             self.networks[k] = directed_graph
+            self.matrices[k] = nx.to_scipy_sparse_matrix(directed_graph).tolil()
 
-    def _add_random_transaction(self, block_number, balance_diff_cost):
-        actors = list(self.block_actors[block_number].keys())
-        network = self.networks[block_number]
-
-        to = choice(actors)
-        fr = choice(actors)
-
-        while fr == to:
-            to = choice(actors)
+    @staticmethod
+    def _add_random_transaction(matrix, balance_diff_cost):
+        x = randint(0, matrix.shape[0]-1)
+        y = randint(0, matrix.shape[1]-1)
 
         # FIXME find better way to do this
-        amount = int(normalvariate(0, 100))
+        amount = matrix[x, y] + int(normalvariate(0, 100))
 
-        # If edge already exists add to the edge, if weight less than 0 remove edge
-        if network.number_of_edges(to, fr) > 0:
-            weight = network[to][fr]["weight"] + amount
+        if amount < 0:
+            matrix[x, y] = 0
+        else:
+            matrix[x, y] = amount
 
-            if weight <= 0:
-                network.remove_edge(to, fr)
-                return
-
-            network[to][fr]["weight"] = weight
-            return
-
-        network.add_edge(to, fr, weight=amount)
+        return matrix
