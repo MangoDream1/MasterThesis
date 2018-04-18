@@ -15,6 +15,9 @@ class Aggregator:
         self.networks = {}
         self.matrices = {}
 
+        self._calculate_end_balances = lambda matrix: \
+            np.array([matrix[:, i].sum() - row.sum() for i, row in enumerate(matrix)])
+
         self.split_into_blocks(time_block)
 
         self.transaction_cost = transaction_cost
@@ -117,7 +120,7 @@ class Aggregator:
         :return:
         """
 
-        diff = sum(np.absolute(self._calculate_end_balance(matrix) - goal_balance))
+        diff = sum(np.absolute(self._calculate_end_balances(matrix) - goal_balance))
         n_transactions = matrix.count_nonzero()
 
         return diff * self.balance_diff_multiplier, n_transactions * self.transaction_cost
@@ -146,16 +149,7 @@ class Aggregator:
 
         self.goal_balance = {}
         for k, matrix in self.matrices.items():
-            self.goal_balance[k] = self._calculate_end_balance(matrix)
-
-    def _calculate_end_balance(self, matrix):
-        """
-        Returns an np.array with the end balance
-        :param matrix: network matrix
-        :return: array with end balances of all actors using same order as DiGraph.nodes
-        """
-
-        return np.array([matrix[:, i].sum() - row.sum() for i, row in enumerate(matrix)])
+            self.goal_balance[k] = self._calculate_end_balances(matrix)
 
     def _create_networks(self, tx_block):
         """
