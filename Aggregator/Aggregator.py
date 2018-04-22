@@ -117,7 +117,7 @@ class Aggregator:
         Calculates the cost of a block
         :param matrix: the graph matrix
         :param goal_balance: the balance that is being compared to
-        :return:
+        :return: constraint violation, cost tuple
         """
 
         diff = sum(np.absolute(self._calculate_end_balances(matrix) - goal_balance))
