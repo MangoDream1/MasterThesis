@@ -10,14 +10,13 @@ class Aggregator:
         self.transactions = transactions
 
         self.goal_balance = {}
+        self.abs_max = {}
         self.block_actors = {}
 
         self.networks = {}
         self.matrices = {}
 
-        self._calculate_end_balances = lambda matrix: \
-            np.array([matrix[:, i].sum() - row.sum() for i, row in enumerate(matrix)])
-
+        self._calculate_end_balances = lambda matrix: sum(matrix - matrix.T).toarray()
         self.split_into_blocks(time_block)
 
         self.transaction_cost = transaction_cost
@@ -27,6 +26,7 @@ class Aggregator:
     def simple_hill_climber(self, block_number):
         matrix = self.matrices[block_number]
         goal_balance = self.goal_balance[block_number]
+        abs_max = self.abs_max[block_number]
 
         print("Pre-cost", self.block_cost(matrix, goal_balance))
 
@@ -43,7 +43,7 @@ class Aggregator:
 
         while non_improvement <= 1000 and cost != 0:
             old_matrix = matrix.copy()
-            matrix = self._add_random_transaction(matrix, diff_cost)
+            matrix = self._add_random_transaction(matrix, abs_max)
 
             n_diff_cost, n_tx_cost = self.block_cost(matrix, goal_balance)
             n_cost = n_diff_cost + n_tx_cost
@@ -120,7 +120,7 @@ class Aggregator:
         :return: constraint violation, cost tuple
         """
 
-        diff = sum(np.absolute(self._calculate_end_balances(matrix) - goal_balance))
+        diff = np.absolute(self._calculate_end_balances(matrix) - goal_balance).sum()
         n_transactions = matrix.count_nonzero()
 
         return diff * self.balance_diff_multiplier, n_transactions * self.transaction_cost
@@ -150,6 +150,7 @@ class Aggregator:
         self.goal_balance = {}
         for k, matrix in self.matrices.items():
             self.goal_balance[k] = self._calculate_end_balances(matrix)
+            self.abs_max[k] = np.absolute(self.goal_balance[k]).max()
 
     def _create_networks(self, tx_block):
         """
@@ -174,16 +175,11 @@ class Aggregator:
             self.matrices[k] = nx.to_scipy_sparse_matrix(directed_graph).tolil()
 
     @staticmethod
-    def _add_random_transaction(matrix, balance_diff_cost):
-        x = randint(0, matrix.shape[0]-1)
-        y = randint(0, matrix.shape[1]-1)
+    def _add_random_transaction(matrix, abs_max, mutation_rate=0.1, deviations_divider=3):
+        selection = sc.sparse.rand(*matrix.shape, mutation_rate) > 0  # look if always 10% then problem
+        amounts = np.random.normal(0, abs_max / deviations_divider, len(selection.data))
 
-        # FIXME find better way to do this
-        amount = matrix[x, y] + int(normalvariate(0, 100))
-
-        if amount < 0:
-            matrix[x, y] = 0
-        else:
-            matrix[x, y] = amount
+        matrix[selection] += amounts
+        matrix[matrix < 0] = 0
 
         return matrix
