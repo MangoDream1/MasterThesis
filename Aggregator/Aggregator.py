@@ -16,6 +16,8 @@ class Aggregator:
         self.networks = {}
         self.matrices = {}
 
+        self.matrix_format = "lil"
+
         self._calculate_end_balances = lambda matrix: sum(matrix - matrix.T).toarray()
         self.split_into_blocks(time_block)
 
@@ -31,7 +33,7 @@ class Aggregator:
         print("Pre-cost", self.block_cost(matrix, goal_balance))
 
         # Random matrix for init
-        matrix = sc.sparse.random(*matrix.shape).tolil()
+        matrix = sc.sparse.random(*matrix.shape).asformat(self.matrix_format)
 
         diff_cost, tx_cost = self.block_cost(matrix, goal_balance)
         cost = diff_cost + tx_cost
@@ -172,7 +174,7 @@ class Aggregator:
             directed_graph.add_weighted_edges_from(edges)
 
             self.networks[k] = directed_graph
-            self.matrices[k] = nx.to_scipy_sparse_matrix(directed_graph).tolil()
+            self.matrices[k] = nx.to_scipy_sparse_matrix(directed_graph).asformat(self.matrix_format)
 
     @staticmethod
     def _add_random_transaction(matrix, abs_max, mutation_rate=0.1, deviations_divider=3):
