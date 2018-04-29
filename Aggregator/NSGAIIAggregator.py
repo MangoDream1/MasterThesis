@@ -1,15 +1,13 @@
-from Aggregator.GenericAggregator import GenericAggregator
-from constants.constants import *
-from Objects.Individual import Individual
+from collections import defaultdict
+from random import *
 
 import matplotlib.pyplot as plt
-import networkx as nx
 import numpy as np
-from random import *
 import scipy as sc
-import seaborn
 
-from collections import defaultdict
+from Aggregator.GenericAggregator import GenericAggregator
+from Objects.GeneticIndividual import GeneticIndividual
+from constants.constants import *
 
 
 class NSGAIIAggregator(GenericAggregator):
@@ -40,7 +38,7 @@ class NSGAIIAggregator(GenericAggregator):
         self.correction_matrix = np.ones(self.matrix.shape)
         np.fill_diagonal(self.correction_matrix, 0.)
 
-        self.population = np.array([Individual(self.random_start(), self.cost)
+        self.population = np.array([GeneticIndividual(self.random_start(), self.cost)
                                     for i in range(self.population_size)])
 
     def mutate(self, matrix):
@@ -151,7 +149,7 @@ class NSGAIIAggregator(GenericAggregator):
         child = parent2.matrix.copy()
         child[selection] = parent1.matrix[selection]
 
-        return [Individual(child, self.cost)]
+        return [GeneticIndividual(child, self.cost)]
 
     def SBX_crossover(self, parent1, parent2):
         if parent1.matrix.shape != parent2.matrix.shape:
@@ -168,7 +166,7 @@ class NSGAIIAggregator(GenericAggregator):
         child2 = (0.5 * (parent1.matrix.multiply((b-1)) +
                          parent2.matrix.multiply((b+1)))).astype(int)
 
-        return [Individual(child1, self.cost), Individual(child2, self.cost)]
+        return [GeneticIndividual(child1, self.cost), GeneticIndividual(child2, self.cost)]
 
     def tournament_selector(self, P):
         winner = choice(P)

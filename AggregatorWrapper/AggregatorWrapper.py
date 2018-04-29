@@ -1,9 +1,7 @@
-from constants.constants import *
-
 from collections import defaultdict
+
 import networkx as nx
-import numpy as np
-import scipy as sc
+
 
 class AggregatorWrapper:
     def __init__(self, aggregator, transactions, time_block, *args, **kwargs):
