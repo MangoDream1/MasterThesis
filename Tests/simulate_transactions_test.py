@@ -1,12 +1,12 @@
-from Aggregator.simulate_aggregator import simulate_aggregator
+from AggregatorWrapper.simulate_aggregator_wrapper import simulate_aggregator
 from Aggregator.GenericAggregator import GenericAggregator
 
 from pprint import pprint
 
-agg = simulate_aggregator(GenericAggregator, 1000, 60*60*24*7, 100)
+wrapper = simulate_aggregator(GenericAggregator, 1000, 60*60*24*7, 100)
 
-pprint([(k, len(v)) for k, v in agg.networks.items()])
+pprint([(k, len(v.network.edges)) for k, v in wrapper.aggregators.items()])
 
-agg.split_into_blocks(60*60*24*3)
+wrapper.split_into_blocks(60*60*24*3)
 
-pprint([(k, len(v), sum(agg.block_cost(agg.matrices[k], agg.goal_balance[k]))) for k, v in agg.networks.items()])
+pprint([(k, len(v.network.edges), sum(v.cost(v.matrix))) for k, v in wrapper.aggregators.items()])

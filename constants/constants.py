@@ -1,0 +1,2 @@
+MATRIX_FORMAT = "lil"
+POSITIVE_INFINITY = float("inf")
