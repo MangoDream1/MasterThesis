@@ -1,10 +1,11 @@
-from Aggregator.SimulatedAggregator import SimulatedAggregator
+from Aggregator.simulate_aggregator import simulate_aggregator
+from Aggregator.GenericAggregator import GenericAggregator
+
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 
-
-agg = SimulatedAggregator(10, None, 5)
+agg = simulate_aggregator(GenericAggregator, 1000, 60*60*24*7, 100)
 
 nx.draw(agg.networks[0], with_labels=True)
 plt.show()
