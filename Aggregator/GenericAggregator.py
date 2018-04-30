@@ -20,12 +20,24 @@ class GenericAggregator:
         self.deviations_divider = deviations_divider
 
         self.log_data = []
-        
+    
     def set_init_variables(self, matrix, network):
         self.matrix = matrix.asformat(MATRIX_FORMAT)
         self.network = network
         self._get_actors()
         self._get_goal_balance()
+
+        self.correction_matrix = np.ones(self.matrix.shape)
+        np.fill_diagonal(self.correction_matrix, 0.)
+
+    def corrections(self, matrix):
+        matrix = matrix.multiply(
+            self.correction_matrix).asformat(MATRIX_FORMAT)
+
+        matrix[matrix < 0] = 0
+        matrix[matrix > self.abs_max] = self.abs_max
+
+        return matrix.astype(int)
 
     def cost(self, matrix):
         """

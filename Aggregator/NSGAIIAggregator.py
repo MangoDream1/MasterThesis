@@ -39,15 +39,6 @@ class NSGAIIAggregator(GenericAggregator):
         self.population = np.array([GeneticIndividual(self.random_start(), self.cost)
                                     for i in range(self.population_size)])
 
-    def corrections(self, matrix):
-        matrix = matrix.multiply(
-            self.correction_matrix).asformat(MATRIX_FORMAT)
-
-        matrix[matrix < 0] = 0
-        matrix[matrix > self.abs_max] = self.abs_max
-
-        return matrix.astype(int)
-
     def random_start(self):
         m = sc.sparse.rand(*self.matrix.shape, random())
         m *= self.abs_max
