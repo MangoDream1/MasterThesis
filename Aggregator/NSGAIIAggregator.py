@@ -4,6 +4,7 @@ from random import *
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sc
+import networkx as nx
 
 from Aggregator.GenericAggregator import GenericAggregator
 from utils.progress_bar import progress_bar
