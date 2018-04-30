@@ -6,6 +6,7 @@ import numpy as np
 import scipy as sc
 
 from Aggregator.GenericAggregator import GenericAggregator
+from utils.progress_bar import progress_bar
 from Objects.GeneticIndividual import GeneticIndividual
 from constants.constants import *
 
@@ -174,7 +175,7 @@ class NSGAIIAggregator(GenericAggregator):
         for _ in range(self.tournament_size-1):
             candidate = choice(P)
 
-            if candidate[self.compared_cost] > winner[self.compared_cost]:
+            if getattr(candidate, self.compared_cost) > getattr(winner, self.compared_cost):                
                 winner = candidate
 
         return winner
@@ -221,10 +222,13 @@ class NSGAIIAggregator(GenericAggregator):
 
             child.update()
 
-        return np.array(parents + children)
+        self.population = np.array(parents + children) 
 
     def iterate(self, generations):
-        for _ in range(generations):
+        pb = progress_bar(0, generations-1)
+
+        for i in range(generations):
+            pb(i)
             self.step()
 
             self.log_data.append(np.array([(x.cost, x.cons_violation, x.combined_cost)

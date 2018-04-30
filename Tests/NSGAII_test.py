@@ -5,9 +5,11 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 wrapper = simulate_aggregator(NSGAIIAggregator, 50, None, 10)
-network = wrapper.aggregators[0].network
+agg = wrapper.aggregators[0]
 
-nx.draw(network, with_labels=True)
+nx.draw(agg.network, with_labels=True)
 plt.show()
 
-# TODO make it do genetic algorithm
+agg.iterate(10)
+
+agg.plot_log_data()
