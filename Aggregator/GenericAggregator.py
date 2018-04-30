@@ -8,11 +8,15 @@ from random import *
 
 
 class GenericAggregator:
-    def __init__(self, transaction_cost=100, balance_diff_multiplier=10):
+    def __init__(self, mutation_rate=0.1, deviations_divider=3, 
+                 transaction_cost=100, balance_diff_multiplier=10):
         self._calculate_end_balances = lambda matrix: sum(matrix - matrix.T).toarray()
 
         self.transaction_cost = transaction_cost
         self.balance_diff_multiplier = balance_diff_multiplier
+
+        self.mutation_rate = mutation_rate
+        self.deviations_divider = deviations_divider
 
     def set_init_variables(self, matrix, network):
         self.matrix = matrix.asformat(MATRIX_FORMAT)
@@ -34,10 +38,16 @@ class GenericAggregator:
         return diff * self.balance_diff_multiplier, n_transactions * self.transaction_cost
 
     def mutate(self, matrix):
-        """
-        Override method for mutation of matrix
-        """
-        pass
+        #     selection = sc.sparse.rand(*matrix.shape, mutation_rate) > 0 # look if always 10% then problem
+        #     amounts = np.random.normal(0, abs_max/deviations_divider, len(selection.data)).astype(int)
+
+        selection = np.random.random(matrix.shape) < self.mutation_rate
+        amounts = np.random.normal(0, self.abs_max/self.deviations_divider,
+                                   len(selection[selection == True])).astype(int)
+
+        matrix[selection] += amounts
+
+        return matrix
     
     def step(self):
         """

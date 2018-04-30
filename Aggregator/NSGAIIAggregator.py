@@ -24,9 +24,7 @@ class NSGAIIAggregator(GenericAggregator):
         self.crossover_method = self.SBX_crossover
         self.compared_cost = "combined_cost"
         self.correction = True
-        self.mutation_rate = mutation_rate
-        self.deviations_divider = deviations_divider
-
+        
         self.log_data = []
         self.single_log_data = []
 
@@ -41,18 +39,6 @@ class NSGAIIAggregator(GenericAggregator):
 
         self.population = np.array([GeneticIndividual(self.random_start(), self.cost)
                                     for i in range(self.population_size)])
-
-    def mutate(self, matrix):
-        #     selection = sc.sparse.rand(*matrix.shape, mutation_rate) > 0 # look if always 10% then problem
-        #     amounts = np.random.normal(0, abs_max/deviations_divider, len(selection.data)).astype(int)
-
-        selection = np.random.random(matrix.shape) < self.mutation_rate
-        amounts = np.random.normal(0, self.abs_max/self.deviations_divider,
-                                   len(selection[selection == True])).astype(int)
-
-        matrix[selection] += amounts
-
-        return matrix
 
     def corrections(self, matrix):
         matrix = matrix.multiply(
