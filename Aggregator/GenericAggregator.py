@@ -5,6 +5,7 @@ import networkx as nx
 import numpy as np
 import scipy as sc
 from random import *
+import matplotlib.pyplot as plt
 
 
 class GenericAggregator:
@@ -18,6 +19,8 @@ class GenericAggregator:
         self.mutation_rate = mutation_rate
         self.deviations_divider = deviations_divider
 
+        self.log_data = []
+        
     def set_init_variables(self, matrix, network):
         self.matrix = matrix.asformat(MATRIX_FORMAT)
         self.network = network
@@ -55,6 +58,12 @@ class GenericAggregator:
         """
         pass
 
+    def iterate(self):
+        """
+        Override method for algorithm iteration
+        """
+        pass
+
     def _get_actors(self):
         """
         Creates an nested dictionary of the actor location in the end balance array
@@ -77,3 +86,17 @@ class GenericAggregator:
         """
         self.goal_balance = self._calculate_end_balances(self.matrix)
         self.abs_max = np.absolute(self.goal_balance).max()
+
+    def plot_log_data(self):
+        plt.figure(1, figsize=(20, 5))
+
+        plt.subplot(131).title.set_text("cost")
+        plt.plot(np.array(self.log_data)[:, 0])
+
+        plt.subplot(132).title.set_text("cons_violation")
+        plt.plot(np.array(self.log_data)[:, 1])
+
+        plt.subplot(133).title.set_text("combined_cost")
+        plt.plot(np.array(self.log_data)[:, 2])
+
+        plt.show()

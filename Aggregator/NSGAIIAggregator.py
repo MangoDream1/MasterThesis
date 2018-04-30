@@ -25,7 +25,6 @@ class NSGAIIAggregator(GenericAggregator):
         self.compared_cost = "combined_cost"
         self.correction = True
         
-        self.log_data = []
         self.single_log_data = []
 
     def set_init_variables(self, matrix, network):
@@ -223,6 +222,9 @@ class NSGAIIAggregator(GenericAggregator):
             x = self.population[0]
             self.single_log_data.append(
                 np.array([x.cost, x.cons_violation, x.combined_cost]))
+
+        self.matrix = self.population[0].matrix
+        self.network = nx.from_scipy_sparse_matrix(self.matrix, create_using=nx.DiGraph())
 
     def plot_log_data(self):
         plt.figure(1, figsize=(20, 5))
