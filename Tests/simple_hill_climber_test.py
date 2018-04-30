@@ -1,19 +1,18 @@
-# from AggregatorWrapper.simulate_aggregator_wrapper import simulate_aggregator
-# from AggregatorWrapper.AggregatorWrapper import AggregatorWrapper
+from AggregatorWrapper.simulate_aggregator_wrapper import simulate_aggregator
+from Aggregator.SimpleHillClimberAggregator import SimpleHillClimber
 
-# import matplotlib.pyplot as plt
-# import networkx as nx
-# import numpy as np
+import matplotlib.pyplot as plt
+import networkx as nx
+import numpy as np
 
-# agg = simulate_aggregator(AggregatorWrapper, 1000, 60*60*24*7, 100)
+wrapper = simulate_aggregator(SimpleHillClimber, 25, None, 5, 
+                              mutation_rate=0.05, deviations_divider=1000,
+                              non_improvement=10000)
+agg = wrapper.aggregators[0]
 
-# nx.draw(agg.networks[0], with_labels=True)
-# plt.show()
+agg.random_start()
+agg.iterate()
 
-# agg.simple_hill_climber(0)
+agg.plot_log_data()
 
-# nx.draw(agg.networks[0], with_labels=True)
-# plt.show()
-
-# print(agg.matrices[0].toarray())
-
+print(agg.matrix.toarray())
