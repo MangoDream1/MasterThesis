@@ -29,13 +29,7 @@ class NSGAIIAggregator(GenericAggregator):
         self.single_log_data = []
 
     def set_init_variables(self, matrix, network):
-        self.matrix = matrix.asformat(MATRIX_FORMAT)
-        self.network = network
-        self._get_actors()
-        self._get_goal_balance()
-
-        self.correction_matrix = np.ones(self.matrix.shape)
-        np.fill_diagonal(self.correction_matrix, 0.)
+        super().set_init_variables(matrix, network)
 
         self.population = np.array([GeneticIndividual(self.random_start(), self.cost)
                                     for i in range(self.population_size)])
