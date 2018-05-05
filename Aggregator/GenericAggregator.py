@@ -23,6 +23,7 @@ class GenericAggregator:
     
     def set_init_variables(self, matrix, network):
         self.matrix = matrix.asformat(MATRIX_FORMAT)
+        self.start_matrix = matrix.asformat(MATRIX_FORMAT)
         self.network = network
         self._get_actors()
         self._get_goal_balance()
