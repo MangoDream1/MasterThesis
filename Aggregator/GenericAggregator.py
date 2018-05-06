@@ -23,9 +23,12 @@ class GenericAggregator:
     
     def set_init_variables(self, matrix, network):
         self.matrix = matrix.asformat(MATRIX_FORMAT)
-        self.start_matrix = matrix.asformat(MATRIX_FORMAT)
-        self.network = network
-        self._get_actors()
+        self.start_matrix = matrix.copy().asformat(MATRIX_FORMAT)
+        
+        if network:
+            self.network = network
+            self._get_actors()
+            
         self._get_goal_balance()
 
         self.correction_matrix = np.ones(self.matrix.shape)
