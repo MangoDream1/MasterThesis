@@ -104,7 +104,7 @@ class GenericAggregator:
         self.goal_balance = self._calculate_end_balances(self.matrix)
         self.abs_max = np.abs(self.goal_balance).max()
 
-    def plot_log_data(self):
+    def plot_log_data(self, show=True):
         plt.figure(1, figsize=(20, 5))
 
         plt.subplot(131).title.set_text("cost")
@@ -116,7 +116,8 @@ class GenericAggregator:
         plt.subplot(133).title.set_text("combined_cost")
         plt.plot(np.array(self.log_data)[:, 2])
 
-        plt.show()
+        if show:
+            plt.show()
 
     def plot_network(self):
         self.network = nx.from_scipy_sparse_matrix(self.matrix, create_using=nx.DiGraph())

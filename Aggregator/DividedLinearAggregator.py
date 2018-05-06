@@ -4,6 +4,8 @@ from Aggregator.GenericAggregator import GenericAggregator
 import networkx as nx
 import numpy as np
 from itertools import combinations
+import matplotlib.pyplot as plt
+
 
 class DividedLinearAggregator(GenericAggregator):
     def __init__(self, transaction_cost=1, balance_diff_multiplier=1, **kwargs):
@@ -11,14 +13,16 @@ class DividedLinearAggregator(GenericAggregator):
                          balance_diff_multiplier=balance_diff_multiplier, 
                          **kwargs)
 
-    def iterate(self, set_generator):
+        self._iteration_points = []
+
+    def iterate(self, set_generator, *generator_args):
         cons, cost = self.cost(self.matrix)
         self.log_data.append(np.array([cost, cons, cons + cost]))
-
+        
         while True:
             old_cost = cost
             i = 0
-            for nodes in set_generator:
+            for nodes in set_generator(*generator_args):
                 matrix = self.matrix[np.ix_(nodes, nodes)]
                 
                 agg = LinearAggregator()
@@ -32,10 +36,14 @@ class DividedLinearAggregator(GenericAggregator):
                     self.log_data.append(np.array([cost, cons, cons + cost]))
                 i += 1
 
+            self.network = nx.from_scipy_sparse_matrix(self.matrix, create_using=nx.DiGraph())
+            self._iteration_points.append(len(self.log_data))
+
             if old_cost == cost:
                 break
             
     def get_triangles(self):
+        # TODO: with recursion
         network = self.network.to_undirected()
 
         for node in network.nodes:
@@ -53,6 +61,17 @@ class DividedLinearAggregator(GenericAggregator):
     def all_combinations(self, size):
         network = self.network.to_undirected()        
         return combinations(network.nodes, size)
+
+    def plot_log_data(self):
+        super().plot_log_data(False)
+
+        plots = [131, 132, 133]
+
+        for plot in plots:
+            for xc in self._iteration_points:
+                plt.subplot(plot).axvline(x=xc, color='red', label=plot)
+
+        plt.show()
 
     # TODO: think of better ways than triangles; cliques to large; somewhere inbetween 
     #https://en.wikipedia.org/wiki/Clique_problem
