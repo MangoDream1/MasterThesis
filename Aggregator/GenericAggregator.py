@@ -85,14 +85,12 @@ class GenericAggregator:
         :return: 
         """
 
-        self._actors = {}        
-        actors = []
+        self.actor_to_index = {}        
+        self.index_to_actor = {}
 
-        for to, fr in self.network.edges():
-                actors.extend([to, fr])
-
-        for i, a in enumerate(set(actors)):
-            self._actors[a] = i
+        for i, node in enumerate(self.network.nodes()):
+            self.actor_to_index[node] = i
+            self.index_to_actor[i] = node
 
     def _get_goal_balance(self):
         """
@@ -115,3 +113,9 @@ class GenericAggregator:
         plt.plot(np.array(self.log_data)[:, 2])
 
         plt.show()
+
+    def plot_network(self):
+        self.network = nx.from_scipy_sparse_matrix(self.matrix, create_using=nx.DiGraph())
+
+        nx.draw(self.network, with_labels=True)
+        plt.show()        
