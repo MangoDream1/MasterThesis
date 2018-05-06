@@ -32,14 +32,13 @@ class DividedLinearAggregator(GenericAggregator):
                 break
             
     def get_triangles(self):
-        for node in self.network.to_undirected().nodes:
-            for x in self.network.neighbors(node):
-                for y in self.network.neighbors(x):
-                    if self.network.adj[y].get(node, None):
-                        yield list({node, x, y}) # FIXME: always duplicate
+        network = self.network.to_undirected()
 
-    # def get_connected(self, length):
-        
+        for node in network.nodes:
+            for x in network.neighbors(node):
+                for y in network.neighbors(x):
+                    if network.adj[y].get(node, None):
+                        yield list({node, x, y}) # FIXME: always duplicate
 
 
     # TODO: think of better ways than triangles; cliques to large; somewhere inbetween 
