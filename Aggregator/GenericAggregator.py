@@ -1,10 +1,9 @@
-from constants.constants import *
+from constants.constants import MATRIX_FORMAT
 
 from collections import defaultdict
 import networkx as nx
 import numpy as np
 import scipy as sc
-from random import *
 import matplotlib.pyplot as plt
 
 
