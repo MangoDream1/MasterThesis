@@ -5,4 +5,4 @@ wrapper = simulate_aggregator(DividedLinearAggregator, 1000, None, 100)
 agg = wrapper.aggregators[0]
 
 agg.iterate(agg.get_triangles())
-print(agg.plot_log_data())
+agg.plot_log_data()
