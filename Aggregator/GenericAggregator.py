@@ -28,7 +28,7 @@ class GenericAggregator:
         if network:
             self.network = network
             self._get_actors()
-            
+
         self._get_goal_balance()
 
         self.correction_matrix = np.ones(self.matrix.shape)
@@ -84,7 +84,7 @@ class GenericAggregator:
 
     def _get_actors(self):
         """
-        Creates an nested dictionary of the actor location in the end balance array
+        Creates a dictionary of the actor location; also deletes labels from network
         :return: 
         """
 
@@ -94,6 +94,8 @@ class GenericAggregator:
         for i, node in enumerate(self.network.nodes()):
             self.actor_to_index[node] = i
             self.index_to_actor[i] = node
+
+        self.network = nx.from_scipy_sparse_matrix(self.matrix, create_using=nx.DiGraph())
 
     def _get_goal_balance(self):
         """
