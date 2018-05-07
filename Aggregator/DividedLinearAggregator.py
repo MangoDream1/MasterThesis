@@ -53,35 +53,25 @@ class DividedLinearAggregator(GenericAggregator):
             
             if non_improvement == 1:
                 self._non_improvement_points.append(len(self.log_data))
-
+    
         self._end_iteration_points.append(len(self.log_data))
             
-    def get_triangles(self):
-        # TODO: with recursion
-        network = self.network.to_undirected()
-
-        for node in network.nodes:
-            for x in network.neighbors(node):
-                for y in network.neighbors(x):
-                    if network.adj[y].get(node, None):
-                        yield list({node, x, y}) # FIXME: always duplicate
-
     def get_loop(self, size, found_length=10):
-        network = self.network.to_undirected()
-
+        network = self.network.to_undirected()        
         found = deque([], found_length)
 
-        def recursion(node, start_node, loop):
-            for neighbor in network.neighbors(node):
-                if len(loop) == size and network.adj[neighbor].get(start_node, None):
-                    sorted_loop = sorted(loop)
+        def recursion(node, start_node, loop):        
+            if len(loop) < size:    
+                for neighbor in network.neighbors(node):
+                    if neighbor not in loop:
+                        yield from recursion(neighbor, start_node, loop + [neighbor])
+                    
+            elif network.adj[node].get(start_node, None):
+                sorted_loop = sorted(loop)
 
-                    if sorted_loop not in found:
-                        found.append(sorted_loop)
-                        yield sorted_loop
-                elif len(loop) < size and neighbor not in loop:
-                    loop.append(neighbor)
-                    yield from recursion(neighbor, start_node, loop)
+                if sorted_loop not in found:
+                    found.append(sorted_loop)
+                    yield sorted_loop      
 
         for node in network.nodes:
             yield from recursion(node, node, [node])

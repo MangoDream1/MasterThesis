@@ -7,7 +7,6 @@ agg = wrapper.aggregators[0]
 print(agg.cost(agg.matrix))
 
 agg.iterate(agg.get_loop, 3)
-# agg.iterate(agg.get_triangles)
 
 print(agg.cost(agg.matrix))
 
