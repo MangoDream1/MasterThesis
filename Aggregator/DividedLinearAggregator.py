@@ -9,7 +9,8 @@ from collections import deque
 
 
 class DividedLinearAggregator(GenericAggregator):
-    def __init__(self, transaction_cost=1, balance_diff_multiplier=1, **kwargs):
+    def __init__(self, non_improvement=50, transaction_cost=1, 
+                 balance_diff_multiplier=1, **kwargs):
         super().__init__(transaction_cost=transaction_cost, 
                          balance_diff_multiplier=balance_diff_multiplier, 
                          **kwargs)
@@ -17,6 +18,7 @@ class DividedLinearAggregator(GenericAggregator):
         self._iteration_points = []
         self._end_iteration_points = []
         self._non_improvement_points = []
+        self.non_improvement = non_improvement 
 
     def iterate(self, set_generator, *generator_args):
         cons, cost = self.cost(self.matrix)
@@ -48,7 +50,7 @@ class DividedLinearAggregator(GenericAggregator):
             else:
                 non_improvement = 0
             
-            if non_improvement == 100:
+            if non_improvement == self.non_improvement:
                 break
             
             if non_improvement == 1:
