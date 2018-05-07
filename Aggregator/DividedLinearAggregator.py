@@ -5,6 +5,7 @@ import networkx as nx
 import numpy as np
 from itertools import combinations
 import matplotlib.pyplot as plt
+from collections import deque
 
 
 class DividedLinearAggregator(GenericAggregator):
@@ -14,11 +15,14 @@ class DividedLinearAggregator(GenericAggregator):
                          **kwargs)
 
         self._iteration_points = []
+        self._end_iteration_points = []
+        self._non_improvement_points = []
 
     def iterate(self, set_generator, *generator_args):
         cons, cost = self.cost(self.matrix)
         self.log_data.append(np.array([cost, cons, cons + cost]))
         
+        non_improvement = 0
         while True:
             old_cost = cost
             i = 0
@@ -37,10 +41,20 @@ class DividedLinearAggregator(GenericAggregator):
                 i += 1
 
             self.network = nx.from_scipy_sparse_matrix(self.matrix, create_using=nx.DiGraph())
-            self._iteration_points.append(len(self.log_data))
+            self._iteration_points.append(len(self.log_data))            
 
             if old_cost == cost:
+                non_improvement += 1
+            else:
+                non_improvement = 0
+            
+            if non_improvement == 100:
                 break
+            
+            if non_improvement == 1:
+                self._non_improvement_points.append(len(self.log_data))
+
+        self._end_iteration_points.append(len(self.log_data))
             
     def get_triangles(self):
         # TODO: with recursion
@@ -51,6 +65,27 @@ class DividedLinearAggregator(GenericAggregator):
                 for y in network.neighbors(x):
                     if network.adj[y].get(node, None):
                         yield list({node, x, y}) # FIXME: always duplicate
+
+    def get_loop(self, size, found_length=10):
+        network = self.network.to_undirected()
+
+        found = deque([], found_length)
+
+        def recursion(node, start_node, loop):
+            for neighbor in network.neighbors(node):
+                if len(loop) == size and network.adj[neighbor].get(start_node, None):
+                    sorted_loop = sorted(loop)
+
+                    if sorted_loop not in found:
+                        found.append(sorted_loop)
+                        yield sorted_loop
+                elif len(loop) < size and neighbor not in loop:
+                    loop.append(neighbor)
+                    yield from recursion(neighbor, start_node, loop)
+
+        for node in network.nodes:
+            yield from recursion(node, node, [node])
+
 
     def get_connected(self, max_length):
         network = self.network.to_undirected()
@@ -69,7 +104,13 @@ class DividedLinearAggregator(GenericAggregator):
 
         for plot in plots:
             for xc in self._iteration_points:
-                plt.subplot(plot).axvline(x=xc, color='red', label=plot)
+                plt.subplot(plot).axvline(x=xc, color='red', label=plot, ymax=0.03)
+
+            for xc in self._end_iteration_points:
+                plt.subplot(plot).axvline(x=xc, color='black', label=plot, ymax=1)   
+
+            for xc in self._non_improvement_points:
+                plt.subplot(plot).axvline(x=xc, color='green', label=plot, ymax=0.04)             
 
         plt.show()
 
