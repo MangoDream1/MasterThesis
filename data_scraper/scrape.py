@@ -1,13 +1,15 @@
 import requests
 import json
 import csv
+import os
 
 MAIN_URL = "https://blockchain.info/block/%s?format=json"
 START_BLOCK = "0000000000000000000d26984c0229c9f6962dc74db0a6d525f2f1640396f69c" # block height 520000
 
-SAVE_DIR = "data/"
-SAVE_NAME = SAVE_DIR + "%s_%s.csv"
-LATEST_LOCATION = "latest"
+FILE_PATH = os.path.dirname(os.path.realpath(__file__))
+SAVE_DIR = os.path.join(FILE_PATH, "data")
+SAVE_NAME = os.path.join(SAVE_DIR, "%s_%s_%s_%s.csv") # block_id, height, n_tx (not including fees, multi transactions), epoch time
+LATEST_LOCATION = os.path.join(FILE_PATH, "latest")
 
 def get_block(block_index):
     r = requests.get(MAIN_URL % block_index)
@@ -49,32 +51,41 @@ def parse_io(data):
     # print("NEW_GENERATED", new_generated)
     # print("FAULT DECODING OUTPUT", output_addr_decode_errors)
 
-def extract_tx(_in, _out):
-    for ii, (ia, _) in enumerate(_in):
-        if _in[ii][1] == 0:
-            continue
-        
-        for oi, (oa, _) in enumerate(_out):
-            if not _out[oi][1]:
-                continue
-                
-            if _in[ii][1] == None:
-                yield [ia, oa, _out[oi][1]]
-                _in[ii][1]  = 0
-                _out[oi][1] = 0
-            elif _in[ii][1] > _out[oi][1]:
-                yield [ia, oa, _out[oi][1]]
-                _in[ii][1] -= _out[oi][1]
-                _out[oi][1] = 0
-            else:
-                yield [ia, oa, _in[ii][1]]
-                _out[oi][1] -= _in[ii][1]
-                _in[ii][1] = 0
+def extract_tx(io_iterable):
+    miner = "UNKOWN"
+    saved = None
 
-                break
+    for _in, _out in io_iterable:
+        for ii, (ia, _) in enumerate(_in):
+            if _in[ii][1] == 0:
+                continue
+            
+            for oi, (oa, _) in enumerate(_out):
+                if not _out[oi][1]:
+                    continue
+                    
+                if _in[ii][1] == None:
+                    saved = [ia, oa, _out[oi][1]]
+                    _in[ii][1]  = 0
+                    _out[oi][1] = 0
+                    miner = oa
+                elif _in[ii][1] > _out[oi][1]:
+                    yield [ia, oa, _out[oi][1]]
+                    _in[ii][1] -= _out[oi][1]
+                    _out[oi][1] = 0
+                else:
+                    yield [ia, oa, _in[ii][1]]
+                    _out[oi][1] -= _in[ii][1]
+                    _in[ii][1] = 0
+
+                    break
+        
+        if _in[ii][1] > 0:
+            saved[-1] -= _in[ii][1] # remove fees from created amount
+            yield [ia, miner, _in[ii][1]] # add fee as tx
     
-    if _in[ii][1] > 0:
-        yield [ia, "FEE", _in[ii][1]]
+    # yield adjusted mined value
+    yield saved
 
 def append_to_file(filename, iterable):
     if os.path.isfile(filename):
@@ -96,12 +107,7 @@ def read_latest():
 
 
 if __name__ == "__main__":
-    import os
-    import pprint
-    from itertools import chain
-
     if os.path.isfile(LATEST_LOCATION):
-        print(read_latest())
         START_BLOCK = read_latest()
 
     if not os.path.isdir(SAVE_DIR):
@@ -114,11 +120,9 @@ if __name__ == "__main__":
         block = get_block(current_block)
 
         io = parse_io(block)
-        transactions = chain(*map(lambda x: extract_tx(*x), io))
-        
-        append_to_file(SAVE_NAME % (current_block, block["time"]), transactions)
+        transactions = extract_tx(io)
+
+        append_to_file(SAVE_NAME % (current_block, block["height"], block["n_tx"], block["time"]), transactions)
 
         write_latest(current_block)
         current_block = block["prev_block"]
-
-        break
