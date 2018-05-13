@@ -8,16 +8,17 @@ START_BLOCK = "0000000000000000000d26984c0229c9f6962dc74db0a6d525f2f1640396f69c"
 
 FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 SAVE_DIR = os.path.join(FILE_PATH, "data")
-SAVE_NAME = os.path.join(SAVE_DIR, "%s_%s_%s_%s.csv") # block_id, height, n_tx (not including fees, multi transactions), epoch time
+DEBUG = os.path.join(FILE_PATH, "debug")
+SAVE_NAME = os.path.join(SAVE_DIR, "%s_%s_%s_%s.csv") # height, epoch time, n_tx (not including fees, multi transactions), block_id
 LATEST_LOCATION = os.path.join(FILE_PATH, "latest")
 
 def get_block(block_index):
     r = requests.get(MAIN_URL % block_index)
     
     try:
-        return json.loads(r.text) 
+        return json.loads(r.text)
     except:
-        with open("error", "wb") as f:
+        with open("error", "w") as f:
             f.write(r.text)
 
         raise Exception("Text not json")
@@ -36,7 +37,7 @@ def parse_io(data):
 
             input_data = _in["prev_out"]
             tx_inputs.append([input_data["addr"], input_data["value"]])
-
+                
         tx_outputs = []
         for _out in tx["out"]:
             if "addr" not in _out:
@@ -119,10 +120,16 @@ if __name__ == "__main__":
         print("Starting with %s" % current_block)
         block = get_block(current_block)
 
-        io = parse_io(block)
-        transactions = extract_tx(io)
+        try:
+            io = parse_io(block)
+            transactions = extract_tx(io)
 
-        append_to_file(SAVE_NAME % (current_block, block["height"], block["n_tx"], block["time"]), transactions)
+            append_to_file(SAVE_NAME % (block["height"], block["time"], block["n_tx"], current_block), transactions)
+        except:
+            # Save failures to seperate file
+            with open(DEBUG, "a") as f:
+                f.write(current_block)
+                f.write("\n")
 
-        write_latest(current_block)
         current_block = block["prev_block"]
+        write_latest(current_block)
