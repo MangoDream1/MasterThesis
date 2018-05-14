@@ -9,6 +9,7 @@ START_BLOCK = "0000000000000000000d26984c0229c9f6962dc74db0a6d525f2f1640396f69c"
 FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 SAVE_DIR = os.path.join(FILE_PATH, "data")
 DEBUG = os.path.join(FILE_PATH, "debug")
+ERROR = os.path.join(FILE_PATH, "debug")
 SAVE_NAME = os.path.join(SAVE_DIR, "%s_%s_%s_%s.csv") # height, epoch time, n_tx (not including fees, multi transactions), block_id
 LATEST_LOCATION = os.path.join(FILE_PATH, "latest")
 
@@ -18,7 +19,7 @@ def get_block(block_index):
     try:
         return json.loads(r.text)
     except:
-        with open("error", "w") as f:
+        with open(ERROR, "w") as f:
             f.write(r.text)
 
         raise Exception("Text not json")
