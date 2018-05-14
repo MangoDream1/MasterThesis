@@ -50,12 +50,12 @@ class GenericAggregator:
         :return: (constraint violation, cost) tuple
         """
 
-        diff = np.square(self._calculate_end_balances(matrix) - self.goal_balance).sum()
+        diff = np.abs(self._calculate_end_balances(matrix) - self.goal_balance).sum()
         cons = matrix[matrix < 0].sum() * -1
-
+        
         n_transactions = matrix.count_nonzero()
 
-        return (cons + diff) * self.balance_diff_multiplier, n_transactions * self.transaction_cost
+        return (diff + cons) * self.balance_diff_multiplier, n_transactions * self.transaction_cost
 
     def mutate(self, matrix):
         #     selection = sc.sparse.rand(*matrix.shape, mutation_rate) > 0 # look if always 10% then problem
