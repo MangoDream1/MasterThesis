@@ -1,4 +1,4 @@
-from AggregatorWrapper.simulate_aggregator_wrapper import SimulatedAggregatorWrapper
+from AggregatorWrapper.SimulatedAggregatorWrapper import SimulatedAggregatorWrapper
 from Aggregator.LinearAggregator import LinearAggregator
 
 wrapper = SimulatedAggregatorWrapper(LinearAggregator, 20, None, 5)

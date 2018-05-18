@@ -1,4 +1,4 @@
-from AggregatorWrapper.simulate_aggregator_wrapper import SimulatedAggregatorWrapper
+from AggregatorWrapper.SimulatedAggregatorWrapper import SimulatedAggregatorWrapper
 from Aggregator.NSGAIIAggregator import NSGAIIAggregator
 
 import matplotlib.pyplot as plt
