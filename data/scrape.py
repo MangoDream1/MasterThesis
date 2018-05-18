@@ -2,7 +2,7 @@ import requests
 import json
 import csv
 import os
-from data_constants import *
+from data.data_constants import *
 
 def get_block(block_index):
     r = requests.get(MAIN_URL % block_index)
