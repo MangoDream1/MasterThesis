@@ -4,8 +4,8 @@ from Aggregator.NSGAIIAggregator import NSGAIIAggregator
 import matplotlib.pyplot as plt
 import networkx as nx
 
-wrapper = SimulatedAggregatorWrapper(NSGAIIAggregator, 50, None, 10)
-agg = wrapper.aggregators[0]
+wrapper = SimulatedAggregatorWrapper(NSGAIIAggregator, 50, 10)
+agg = next(wrapper.aggregators)
 
 nx.draw(agg.network, with_labels=True)
 plt.show()
