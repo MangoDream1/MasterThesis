@@ -1,7 +1,7 @@
-from AggregatorWrapper.simulate_aggregator_wrapper import simulate_aggregator
+from AggregatorWrapper.simulate_aggregator_wrapper import SimulatedAggregatorWrapper
 from Aggregator.LinearAggregator import LinearAggregator
 
-wrapper = simulate_aggregator(LinearAggregator, 20, None, 5)
+wrapper = SimulatedAggregatorWrapper(LinearAggregator, 20, None, 5)
 agg = wrapper.aggregators[0]
 
 print(agg.iterate())

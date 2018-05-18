@@ -4,10 +4,10 @@ import networkx as nx
 
 
 class AggregatorWrapper:
-    def __init__(self, aggregator, transactions, time_block, *args, **kwargs):
+    def __init__(self, Aggregator, transactions, time_block, *args, **kwargs):
         self.transactions = transactions
 
-        self.aggregators = defaultdict(lambda: aggregator(*args, **kwargs))
+        self.aggregators = defaultdict(lambda: Aggregator(*args, **kwargs))
 
         self.split_into_blocks(time_block)
 
@@ -49,22 +49,35 @@ class AggregatorWrapper:
 
     def _create_networks(self, tx_block):
         """
-        Creates networks for each block and saves in self.network with same key as tx_block
+        Calls _create_network for all items in tx_block and sets it to appropiate aggregator
         :param tx_block: nested list with all transactions per block
         :return:
         """
 
         for k, v in tx_block.items():
-            directed_graph = nx.DiGraph()
-            edges = [tx.get_graph_edge() for tx in v]
-
-            # joins edges from and to same location
-            joined = defaultdict(int)
-            for to, fr, amount in edges:
-                joined[(to, fr)] += amount
-
-            edges = [(to, fr, amount) for (to, fr), amount in joined.items()]
-            directed_graph.add_weighted_edges_from(edges)
+            network = self._create_network(v)
 
             self.aggregators[k].set_init_variables(
-                nx.to_scipy_sparse_matrix(directed_graph), directed_graph)
+                nx.to_scipy_sparse_matrix(network), network)
+
+    @staticmethod
+    def _create_network(transactions):
+        """
+        Creates network from a transactions list; joins transactions having the same to and fr
+        :param transactions: list of Transaction objects
+        :return: directed graph
+        """
+
+        edges = [tx.get_graph_edge() for tx in transactions]
+
+        # joins edges from and to same location
+        joined = defaultdict(int)
+        for to, fr, amount in edges:
+            joined[(to, fr)] += amount
+
+        edges = [(to, fr, amount) for (to, fr), amount in joined.items()]
+        
+        directed_graph = nx.DiGraph()
+        directed_graph.add_weighted_edges_from(edges)
+
+        return directed_graph

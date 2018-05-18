@@ -1,7 +1,7 @@
-from AggregatorWrapper.simulate_aggregator_wrapper import simulate_aggregator
+from AggregatorWrapper.SimulatedAggregatorWrapper import SimulatedAggregatorWrapper
 from Aggregator.DividedLinearAggregator import DividedLinearAggregator
 
-wrapper = simulate_aggregator(DividedLinearAggregator, 1000, None, 100)
+wrapper = SimulatedAggregatorWrapper(DividedLinearAggregator, 1000, None, 100)
 agg = wrapper.aggregators[0]
 
 print(agg.cost(agg.matrix))
