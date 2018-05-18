@@ -46,7 +46,7 @@ class LinearAggregator(GenericAggregator):
         result = self.problem.solve(self.solver, **kwargs)
 
         if result == float("inf"):
-            print("Not solvable")
+            print("Not solvable") # TODO: find out why some are not solvable
             return result
 
         self.matrix = np.round(self.problem_matrix.value, 2)
