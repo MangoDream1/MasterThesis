@@ -9,7 +9,7 @@ def select(item_index, lbound, ubound, size):
     for block_file in os.scandir(SAVE_DIR):
         info = block_file.name.split("_")
 
-        if info[item_index] >= str(lbound) and info[item_index] <= str(ubound):
+        if int(info[item_index]) >= lbound and int(info[item_index]) <= ubound:
             selection.append(block_file.name)
 
         if size and len(selection) >= size:
@@ -36,3 +36,5 @@ def read_lines_selection(selection):
 def create_transactions(selection):
     for line in read_lines_selection(selection):
         yield Transaction(*line)
+
+# TODO: data statistics
