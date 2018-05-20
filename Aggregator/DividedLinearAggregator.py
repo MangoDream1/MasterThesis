@@ -7,7 +7,7 @@ from itertools import combinations
 import matplotlib.pyplot as plt
 from collections import deque
 
-
+# TODO: parallize process // subgraphs
 class DividedLinearAggregator(GenericAggregator):
     def __init__(self, non_improvement=50, transaction_cost=1, 
                  balance_diff_multiplier=1, **kwargs):
@@ -18,7 +18,8 @@ class DividedLinearAggregator(GenericAggregator):
         self._iteration_points = []
         self._end_iteration_points = []
         self._non_improvement_points = []
-        self.non_improvement = non_improvement 
+        self.non_improvement = non_improvement
+        self.linear_aggregator_kwargs = {}
 
     def iterate(self, set_generator, *generator_args):
         cons, cost = self.cost(self.matrix)
@@ -33,9 +34,10 @@ class DividedLinearAggregator(GenericAggregator):
                 
                 agg = LinearAggregator()
                 agg.set_init_variables(matrix, None)
-                agg.iterate()
+                result = agg.iterate(**self.linear_aggregator_kwargs)
                 
-                self.matrix[np.ix_(nodes, nodes)] = agg.matrix
+                if result == float("inf"): # not solvable
+                    continue
 
                 if i % 10:
                     cons, cost = self.cost(self.matrix)
@@ -58,7 +60,7 @@ class DividedLinearAggregator(GenericAggregator):
     
         self._end_iteration_points.append(len(self.log_data))
             
-    def get_loop(self, size, found_length=10):
+    def get_loop(self, size, found_length=10): #TODO: experiment with found_length
         network = self.network.to_undirected()        
         found = deque([], found_length)
 
