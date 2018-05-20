@@ -39,6 +39,8 @@ class DividedLinearAggregator(GenericAggregator):
                 if result == float("inf"): # not solvable
                     continue
 
+                self.matrix[np.ix_(nodes,nodes)] = agg.matrix
+
                 if i % 10:
                     cons, cost = self.cost(self.matrix)
                     self.log_data.append(np.array([cost, cons, cons + cost]))
@@ -46,6 +48,7 @@ class DividedLinearAggregator(GenericAggregator):
 
             self.network = nx.from_scipy_sparse_matrix(self.matrix, create_using=nx.DiGraph())
             self._iteration_points.append(len(self.log_data))            
+            cons, cost = self.cost(self.matrix)
 
             if old_cost == cost:
                 non_improvement += 1
