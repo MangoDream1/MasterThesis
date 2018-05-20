@@ -53,7 +53,7 @@ class LinearAggregator(GenericAggregator):
         if self.abs_max == 0: # happens if all edges are already removed; results in errors
             return float("inf")
 
-        result = self.problem.solve(self.solver, **kwargs)
+        result = self.problem.solve(self.solver, **kwargs) # TODO: measure completion time 
 
         if result == float("inf"):
             print("Not solvable")
