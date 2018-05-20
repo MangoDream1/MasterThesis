@@ -19,6 +19,13 @@ class LinearAggregator(GenericAggregator):
     def set_init_variables(self, matrix, network):
         super().set_init_variables(matrix, network)
 
+        # normalize
+        if self.abs_max == 0:
+            return
+
+        self.matrix = self.matrix.toarray() / self.abs_max
+        self._get_goal_balance()
+
         self.problem_matrix = Variable(*matrix.shape)
         self.count_matrix = Bool(*matrix.shape)
 
@@ -43,13 +50,17 @@ class LinearAggregator(GenericAggregator):
         pass
 
     def iterate(self, **kwargs):
+        if self.abs_max == 0: # happens if all edges are already removed; results in errors
+            return float("inf")
+
         result = self.problem.solve(self.solver, **kwargs)
 
         if result == float("inf"):
-            print("Not solvable") # TODO: find out why some are not solvable
+            print("Not solvable")
             return result
 
-        self.matrix = np.round(self.problem_matrix.value, 2)
+        self.matrix = self.problem_matrix.value * self.abs_max # denormalize # TODO: prevent float rounding errors
+        self.matrix = self.matrix.astype(int)
         self.network = nx.from_numpy_matrix(self.matrix, create_using=nx.DiGraph())
 
         return result
@@ -60,6 +71,8 @@ class LinearAggregator(GenericAggregator):
         :return:
         """
         self.goal_balance = self._calculate_end_balances(self.matrix)
+
+    def _get_abs_max(self):
         self.abs_max = np.abs(self.goal_balance.value).max()
 
     def plot_log_data(self):
