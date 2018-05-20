@@ -37,4 +37,4 @@ def create_transactions(selection):
     for line in read_lines_selection(selection):
         yield Transaction(*line)
 
-# TODO: data statistics
+# TODO: data statistics; all data
