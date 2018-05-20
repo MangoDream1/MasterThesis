@@ -29,6 +29,7 @@ class GenericAggregator:
             self._get_actors()
 
         self._get_goal_balance()
+        self._get_abs_max()
 
         self.correction_matrix = np.ones(self.matrix.shape)
         np.fill_diagonal(self.correction_matrix, 0.)
@@ -101,7 +102,9 @@ class GenericAggregator:
         Calculates the end balance for each actor in each block
         :return:
         """
-        self.goal_balance = self._calculate_end_balances(self.matrix)
+        self.goal_balance = self._calculate_end_balances(self.start_matrix)
+
+    def _get_abs_max(self):
         self.abs_max = np.abs(self.goal_balance).max()
 
     def plot_log_data(self, show=True):
