@@ -4,10 +4,11 @@ import networkx as nx
 from data.reader import create_transactions
 
 class AggregatorWrapper:
-    def __init__(self, Aggregator, selections, *args, **kwargs):
+    def __init__(self, Aggregator, selections, exclude_miner_receive=True, *args, **kwargs):
         self._Aggregator = Aggregator
         self._args = args
         self._kwargs = kwargs
+        self.exclude_miner_receive = exclude_miner_receive
 
         self.aggregators = self.create_aggregators(selections)
 
@@ -21,7 +22,7 @@ class AggregatorWrapper:
 
     def create_aggregators(self, selections):
         for i, selection in enumerate(selections):
-            txs = list(create_transactions(selection))
+            txs = list(create_transactions(selection, exclude_miner_receive=self.exclude_miner_receive))
 
             self.result[i]["bitcoin_txs"] = sum(int(x.split("_")[2]) for x in selection)
             yield from self._create_aggregator(i, txs)
