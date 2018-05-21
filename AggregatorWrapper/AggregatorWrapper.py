@@ -15,12 +15,15 @@ class AggregatorWrapper:
             "result_cost": None,
             "result_cons": None,
             "start_n_txs": None,
-            "n_actors":    None
+            "n_actors":    None,
+            "bitcoin_txs": None
         })
 
     def create_aggregators(self, selections):
         for i, selection in enumerate(selections):
             txs = list(create_transactions(selection))
+
+            self.result[i]["bitcoin_txs"] = sum(int(x.split("_")[2]) for x in selection)
             yield from self._create_aggregator(i, txs)
 
     def _create_aggregator(self, i, txs):
