@@ -46,10 +46,8 @@ class LinearAggregator(GenericAggregator):
         diff = np.abs(calculate_end_balances(matrix) - \
             calculate_end_balances(self.start_matrix.toarray())).sum()
 
-        cons = matrix[matrix < 0].sum() * -1
-        n_transactions = len(matrix[matrix != 0])
-
-        return diff + cons, n_transactions
+        n_transactions = matrix[matrix != 0].size
+        return diff, n_transactions
     
     def mutate(self, matrix):
         pass
@@ -69,10 +67,7 @@ class LinearAggregator(GenericAggregator):
             return result
 
         self.matrix = np.round(self.problem_matrix.value * self.abs_max) # denormalize
-        
-        # print(self.matrix)
-
-        self.matrix = self.matrix.astype(int)
+        self.matrix = np.abs(self.matrix.astype(int))
         self.network = nx.from_numpy_matrix(self.matrix, create_using=nx.DiGraph())
 
         return result
