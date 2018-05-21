@@ -9,7 +9,7 @@ from collections import deque
 
 # TODO: parallize process // subgraphs
 class DividedLinearAggregator(GenericAggregator):
-    def __init__(self, non_improvement=50, transaction_cost=1, 
+    def __init__(self, non_improvement=10, transaction_cost=1, 
                  balance_diff_multiplier=1, **kwargs):
         super().__init__(transaction_cost=transaction_cost, 
                          balance_diff_multiplier=balance_diff_multiplier, 
