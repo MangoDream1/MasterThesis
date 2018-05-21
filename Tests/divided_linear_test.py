@@ -6,16 +6,8 @@ agg = next(wrapper.aggregators)
 
 print(agg.cost(agg.matrix))
 
-agg.iterate(agg.get_loop, 3)
-
-print(agg.cost(agg.matrix))
-
-agg.iterate(agg.get_loop, 4)
-
-# print(agg.cost(agg.matrix))
-
-# agg.iterate(agg.get_loop, 5)
-
-print(agg.cost(agg.matrix))
+for x in [3, 4, 5, 6]:
+    agg.iterate(agg.get_loop, x)
+    print(agg.cost(agg.matrix))
 
 agg.plot_log_data()
