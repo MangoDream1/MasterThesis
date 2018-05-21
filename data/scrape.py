@@ -75,7 +75,7 @@ def extract_tx(io_iterable):
         
         if _in[ii][1] > 0:
             saved[-1] -= _in[ii][1] # remove fees from created amount
-            yield [ia, miner, _in[ii][1]] # add fee as tx
+            yield [ia, miner, _in[ii][1]] # add fee as tx #TODO: Tests without fee to miner
     
     # yield adjusted mined value
     yield saved
