@@ -41,7 +41,15 @@ class LinearAggregator(GenericAggregator):
         pass
     
     def cost(self, matrix):
-        pass
+        calculate_end_balances = lambda matrix: sum(matrix - matrix.T)
+
+        diff = np.abs(calculate_end_balances(matrix) - \
+            calculate_end_balances(self.start_matrix.toarray())).sum()
+
+        cons = matrix[matrix < 0].sum() * -1
+        n_transactions = len(matrix[matrix != 0])
+
+        return diff + cons, n_transactions
     
     def mutate(self, matrix):
         pass
@@ -57,9 +65,13 @@ class LinearAggregator(GenericAggregator):
 
         if result == float("inf"):
             print("Not solvable")
+            print(self.start_matrix.toarray())
             return result
 
-        self.matrix = self.problem_matrix.value * self.abs_max # denormalize # TODO: prevent float rounding errors
+        self.matrix = np.round(self.problem_matrix.value * self.abs_max) # denormalize
+        
+        # print(self.matrix)
+
         self.matrix = self.matrix.astype(int)
         self.network = nx.from_numpy_matrix(self.matrix, create_using=nx.DiGraph())
 
