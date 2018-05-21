@@ -73,6 +73,7 @@ class DividedLinearAggregator(GenericAggregator):
                 self._non_improvement_points.append(log_data_index)
     
         self._end_iteration_points.append(log_data_index)
+        super().iterate()
             
     def get_loop(self, size, found_length=10): #TODO: experiment with found_length
         network = self.network.to_undirected()        
@@ -93,7 +94,6 @@ class DividedLinearAggregator(GenericAggregator):
 
         for node in network.nodes:
             yield from recursion(node, node, [node])
-
 
     def get_connected(self, max_length):
         network = self.network.to_undirected()

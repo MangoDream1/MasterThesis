@@ -70,6 +70,7 @@ class LinearAggregator(GenericAggregator):
         self.matrix = np.abs(self.matrix.astype(int))
         self.network = nx.from_numpy_matrix(self.matrix, create_using=nx.DiGraph())
 
+        super().iterate()
         return result
 
     def _get_goal_balance(self):

@@ -12,12 +12,5 @@ class SimulatedAggregatorWrapper(AggregatorWrapper):
 
         super().__init__(Aggregator, transactions)
 
-    def create_aggregators(self, transactions):
-        agg = self._Aggregator(*self._args, **self._kwargs)
-        
-        network = self._create_network(transactions)
-        matrix = nx.to_scipy_sparse_matrix(network)
-
-        agg.set_init_variables(matrix, network)
-
-        yield agg
+    def create_aggregators(self, txs):
+        yield from self._create_aggregator(0, txs)

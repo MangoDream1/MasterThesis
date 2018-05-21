@@ -17,3 +17,4 @@ agg.iterate()
 agg.plot_log_data()
 
 print(agg.matrix.toarray())
+print(wrapper.result[0])

@@ -11,3 +11,4 @@ for x in [3, 4, 5, 6]:
     print(agg.cost(agg.matrix))
 
 agg.plot_log_data()
+print(wrapper.result[0])

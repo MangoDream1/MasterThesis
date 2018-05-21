@@ -212,6 +212,8 @@ class NSGAIIAggregator(GenericAggregator):
         self.matrix = self.population[0].matrix
         self.network = nx.from_scipy_sparse_matrix(self.matrix, create_using=nx.DiGraph())
 
+        super().iterate()
+
     def plot_log_data(self):
         plt.figure(1, figsize=(20, 5))
 

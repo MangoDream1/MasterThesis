@@ -11,18 +11,30 @@ class AggregatorWrapper:
 
         self.aggregators = self.create_aggregators(selections)
 
+        self.result = defaultdict(lambda: {
+            "result_cost": None,
+            "result_cons": None,
+            "start_n_txs": None,
+            "n_actors":    None
+        })
+
     def create_aggregators(self, selections):
-        for selection in selections:
+        for i, selection in enumerate(selections):
             txs = list(create_transactions(selection))
+            yield from self._create_aggregator(i, txs)
 
-            agg = self._Aggregator(*self._args, **self._kwargs)
+    def _create_aggregator(self, i, txs):
+        agg = self._Aggregator(*self._args, result=self.result[i], **self._kwargs)
 
-            network = self._create_network(txs)
-            matrix = nx.to_scipy_sparse_matrix(network)
+        network = self._create_network(txs)
+        matrix = nx.to_scipy_sparse_matrix(network)
 
-            agg.set_init_variables(matrix, network)
+        agg.set_init_variables(matrix, network)
 
-            yield agg
+        self.result[i]["start_n_txs"] = len(txs)
+        self.result[i]["n_actors"] = network.number_of_nodes()
+
+        yield agg
 
     @staticmethod
     def _create_network(transactions):

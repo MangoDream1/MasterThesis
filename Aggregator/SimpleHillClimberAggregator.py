@@ -38,6 +38,8 @@ class SimpleHillClimber(GenericAggregator):
         self.matrix = self.corrections(self.matrix)
         self.network = nx.from_scipy_sparse_matrix(self.matrix, create_using=nx.DiGraph())
 
+        super().iterate()
+
     def random_start(self):
         self.matrix = sc.sparse.random(*self.matrix.shape, random(), MATRIX_FORMAT)
         self.matrix *= self.abs_max

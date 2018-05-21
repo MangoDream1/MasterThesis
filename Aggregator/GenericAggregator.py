@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 class GenericAggregator:
-    def __init__(self, mutation_rate=0.1, deviations_divider=3, 
+    def __init__(self, result={}, mutation_rate=0.1, deviations_divider=3, 
                  transaction_cost=100, balance_diff_multiplier=10):
         self._calculate_end_balances = lambda matrix: sum(matrix - matrix.T).toarray()[0]
 
@@ -19,6 +19,7 @@ class GenericAggregator:
         self.deviations_divider = deviations_divider
 
         self.log_data = []
+        self.result = result
     
     def set_init_variables(self, matrix, network):
         self.matrix = matrix.asformat(MATRIX_FORMAT)
@@ -78,9 +79,12 @@ class GenericAggregator:
 
     def iterate(self):
         """
-        Override method for algorithm iteration
+        Empty method for algorithm iteration; also called after each iteration
         """
-        pass
+        
+        cons, cost = self.cost(self.matrix)
+        self.result["result_cons"] = cons
+        self.result["result_cost"] = cost
 
     def _get_actors(self):
         """
