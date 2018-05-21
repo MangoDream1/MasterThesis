@@ -30,7 +30,7 @@ class DividedLinearAggregator(GenericAggregator):
         self.log_data.append(np.array([cost, cons, cons + cost]))
         
         non_improvement = 0
-        log_data_length = len(self.log_data)        
+        log_data_index = len(self.log_data) - 1        
         while True:
             old_cost = cost
             i = 0
@@ -48,17 +48,17 @@ class DividedLinearAggregator(GenericAggregator):
                 if part_cost[0] == 0 and part_cost[1] <= matrix.count_nonzero():
                     self.matrix[np.ix_(nodes,nodes)] = agg.matrix
                 else:
-                    self._cons_violation_points.append(log_data_length)
+                    self._cons_violation_points.append(log_data_index)
                     self._cons_violation_size.append(part_cost[0])
 
                 if i % 10:
                     cons, cost = self.cost(self.matrix)
                     self.log_data.append(np.array([cost, cons, cons + cost]))
-                    log_data_length += 1
+                    log_data_index += 1
                 i += 1
 
             self.network = nx.from_scipy_sparse_matrix(self.matrix, create_using=nx.DiGraph())
-            self._iteration_points.append(log_data_length)            
+            self._iteration_points.append(log_data_index)            
             cons, cost = self.cost(self.matrix)
 
             if old_cost == cost:
@@ -70,9 +70,9 @@ class DividedLinearAggregator(GenericAggregator):
                 break
             
             if non_improvement == 1:
-                self._non_improvement_points.append(log_data_length)
+                self._non_improvement_points.append(log_data_index)
     
-        self._end_iteration_points.append(log_data_length)
+        self._end_iteration_points.append(log_data_index)
             
     def get_loop(self, size, found_length=10): #TODO: experiment with found_length
         network = self.network.to_undirected()        
