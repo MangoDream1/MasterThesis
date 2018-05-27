@@ -149,8 +149,6 @@ class DividedLinearAggregator(GenericAggregator):
                     combination = [node]
                     v = 0
                     
-        
-
     def all_combinations(self, size):
         network = self.network.to_undirected()        
         return combinations(network.nodes, size)
