@@ -6,6 +6,9 @@ agg = next(wrapper.aggregators)
 
 print(agg.cost(agg.matrix))
 
+agg.iterate(agg.get_crosses)
+print(agg.cost(agg.matrix))
+
 for x in [3, 4, 5, 6]:
     agg.iterate(agg.get_loop, x)
     print(agg.cost(agg.matrix))

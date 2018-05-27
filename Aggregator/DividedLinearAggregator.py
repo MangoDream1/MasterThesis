@@ -101,6 +101,56 @@ class DividedLinearAggregator(GenericAggregator):
             for path in nx.all_simple_paths(network, xnode, ynode, max_length):
                 yield path
 
+    def get_cliques(self, max_size=10):
+        network = self.network.to_undirected()
+        for clique in nx.find_cliques(network):
+            if len(clique) <= max_size:
+                yield clique
+
+    def get_crosses(self, min_size=5, max_size=50):
+        indexes = np.arange(self.matrix.shape[0])
+
+        for node in indexes:
+            balance = self.matrix - self.matrix.T
+            m = balance[node].toarray()[0]
+            
+            out_values = list(m[m<0])
+            in_values  = list(m[m>0])
+            
+            out_indexes = list(indexes[m<0])
+            in_indexes  = list(indexes[m>0])
+            
+            v = 0
+            combination = [node]
+            
+            while len(out_values) != 0 and len(in_values) != 0:
+                o = out_values.pop()
+                oi = out_indexes.pop()
+                
+                v += o
+                combination.append(oi)
+
+                while len(in_values) != 0:
+                    i = in_values.pop()
+                    ii = in_indexes.pop()
+                    
+                    v += i
+                    combination.append(ii)
+
+                    if v > 0:
+                        break
+
+                if len(combination) > max_size:
+                    break
+
+                if len(combination) >= min_size:
+                    yield combination
+                    
+                    combination = [node]
+                    v = 0
+                    
+        
+
     def all_combinations(self, size):
         network = self.network.to_undirected()        
         return combinations(network.nodes, size)
@@ -117,16 +167,16 @@ class DividedLinearAggregator(GenericAggregator):
 
         for plot in plots:
             for xc in self._iteration_points:
-                plt.subplot(plot).axvline(x=xc, color='red', label=plot, ymax=0.03)
+                plt.subplot(plot).axvline(x=xc, color='red', label=plot, ymax=0.03) # red for new epoch
 
             for xc in self._end_iteration_points:
-                plt.subplot(plot).axvline(x=xc, color='black', label=plot, ymax=1)   
+                plt.subplot(plot).axvline(x=xc, color='black', label=plot, ymax=1) # black new generator
 
             for xc in self._non_improvement_points:
-                plt.subplot(plot).axvline(x=xc, color='green', label=plot, ymax=0.04)
+                plt.subplot(plot).axvline(x=xc, color='green', label=plot, ymax=0.04) # green start non_improvement
 
             for xc in self._cons_violation_points:
-                plt.subplot(plot).axvline(x=xc, color='purple', label=plot, ymax=0.02)             
+                plt.subplot(plot).axvline(x=xc, color='purple', label=plot, ymax=0.02) # purple constraint violation rejected
 
         plt.show()
 
