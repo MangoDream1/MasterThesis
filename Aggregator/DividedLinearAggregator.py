@@ -177,7 +177,3 @@ class DividedLinearAggregator(GenericAggregator):
                 plt.subplot(plot).axvline(x=xc, color='purple', label=plot, ymax=0.02) # purple constraint violation rejected
 
         plt.show()
-
-    # TODO: think of better ways than triangles; cliques to large; somewhere inbetween 
-    #https://en.wikipedia.org/wiki/Clique_problem
-    #https://en.wikipedia.org/wiki/Strongly_connected_component
