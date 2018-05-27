@@ -5,7 +5,7 @@ import networkx as nx
 
 
 class LinearAggregator(GenericAggregator):
-    def __init__(self, solver="ECOS_BB", **kwargs):
+    def __init__(self, solver="GUROBI", **kwargs):
         """
         LinearAggregator using cvxpy.
         solver: The used solver; more info: http://www.cvxpy.org/en/latest/tutorial/advanced/#choosing-a-solver
