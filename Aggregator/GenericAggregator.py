@@ -114,16 +114,16 @@ class GenericAggregator:
     def plot_log_data(self, show=True):
         plt.figure(1, figsize=(20, 5))
 
-        self.log_data = np.array(self.log_data)
+        log_data = np.array(self.log_data)
 
         plt.subplot(131).title.set_text("cost")
-        plt.plot(self.log_data[:, 0])
+        plt.plot(log_data[:, 0])
 
         plt.subplot(132).title.set_text("cons_violation")
-        plt.plot(self.log_data[:, 1])
+        plt.plot(log_data[:, 1])
 
         plt.subplot(133).title.set_text("combined_cost")
-        plt.plot(self.log_data[:, 2])
+        plt.plot(log_data[:, 2])
 
         if show:
             plt.show()
