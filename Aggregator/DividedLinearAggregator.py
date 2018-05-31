@@ -1,13 +1,13 @@
 from Aggregator.LinearAggregator import LinearAggregator
 from Aggregator.GenericAggregator import GenericAggregator
-from utils.NetworkUtils import NetworkUtils
+from utils.NetworkComponentMethods import NetworkComponentMethods
 
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 
 # TODO: parallize process // subgraphs
-class DividedLinearAggregator(GenericAggregator, NetworkUtils):
+class DividedLinearAggregator(GenericAggregator, NetworkComponentMethods):
     def __init__(self, non_improvement=10, transaction_cost=1, 
                  balance_diff_multiplier=1, **kwargs):
         

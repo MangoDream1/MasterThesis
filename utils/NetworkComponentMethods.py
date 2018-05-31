@@ -4,7 +4,7 @@ import networkx as nx
 import numpy as np
 
 
-class NetworkUtils:
+class NetworkComponentMethods:
     def __init__(self, network, matrix):
         self.network = network
         self.matrix  = matrix
@@ -86,3 +86,5 @@ class NetworkUtils:
     def all_combinations(self, size):
         network = self.network.to_undirected()        
         return combinations(network.nodes, size)
+
+    # def plot_network_
