@@ -1,15 +1,16 @@
-from collections import deque
+from collections import deque, defaultdict
 from itertools import combinations
 import networkx as nx
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 class NetworkComponentMethods:
-    def __init__(self, network, matrix):
-        self.network = network
-        self.matrix  = matrix
+    def __init__(self):
+        self._component_data = defaultdict(int)
+        self.network = None
+        self.matrix = None
 
-    def get_loop(self, size, found_length=10): #TODO: experiment with found_length
+    def get_loop(self, size, found_length=100): #TODO: experiment with found_length
         network = self.network.to_undirected()        
         found = deque([], found_length)
 
@@ -26,19 +27,23 @@ class NetworkComponentMethods:
                     found.append(sorted_loop)
                     yield sorted_loop      
 
+        name = "Loop %s" % size
         for node in network.nodes:
+            self._component_data[name] += 1
             yield from recursion(node, node, [node])
 
     def get_connected(self, max_length):
         network = self.network.to_undirected()
         for xnode, ynode in combinations(network.nodes, 2):
             for path in nx.all_simple_paths(network, xnode, ynode, max_length):
+                self._component_data["Connected"] += 1
                 yield path
 
     def get_cliques(self, max_size=10):
         network = self.network.to_undirected()
         for clique in nx.find_cliques(network):
             if len(clique) <= max_size:
+                self._component_data["Clique"] += 1
                 yield clique
 
     def get_crosses(self, min_size=5, max_size=50):
@@ -79,12 +84,25 @@ class NetworkComponentMethods:
 
                 if len(combination) >= min_size:
                     yield combination
-                    
+                    self._component_data["Cross"] += 1
                     combination = [node]
                     v = 0
     
     def all_combinations(self, size):
-        network = self.network.to_undirected()        
+        network = self.network.to_undirected()
+        self._component_data["All"] += 1  
         return combinations(network.nodes, size)
 
-    # def plot_network_
+    def plot_bar_component_count(self):
+        names, data = zip(*sorted(list(self._component_data.items())))
+        x_pos = list(range(len(names)))
+
+        plt.bar(x_pos, data)
+        plt.xlabel("Component count")
+        plt.ylabel("Amount")
+        plt.title("Amount of components solved")
+
+        plt.xticks(x_pos, names)
+
+        plt.show()
+

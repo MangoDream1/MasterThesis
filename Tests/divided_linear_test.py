@@ -15,3 +15,5 @@ for x in [3, 4, 5, 6]:
 
 agg.plot_log_data()
 print(wrapper.result[0])
+
+agg.plot_bar_component_count()

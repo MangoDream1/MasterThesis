@@ -13,6 +13,7 @@ class DividedLinearAggregator(GenericAggregator, NetworkComponentMethods):
         
         GenericAggregator.__init__(self, transaction_cost=transaction_cost, 
             balance_diff_multiplier=balance_diff_multiplier, **kwargs)
+        NetworkComponentMethods.__init__(self)
 
         self._iteration_points = []
         self._end_iteration_points = []
