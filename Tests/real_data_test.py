@@ -9,7 +9,8 @@ TIMESTAMPS    = [1511704262, 1511781118]
 selection = select_on_block_height(*BLOCK_HEIGHTS, 2)
 # selection = select_on_timestamp(*TIMESTAMPS, None)
 
-wrapper = AggregatorWrapper(DividedLinearAggregator, [selection], non_improvement=5)
+wrapper = AggregatorWrapper(DividedLinearAggregator, non_improvement=5)
+wrapper.create_aggregators_from_selections([selection])
 agg = next(wrapper.aggregators)
 
 print(agg.cost(agg.matrix))

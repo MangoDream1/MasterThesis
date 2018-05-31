@@ -155,7 +155,7 @@ class DividedLinearAggregator(GenericAggregator):
 
     def plot_log_data(self):
         super().plot_log_data(False)
-
+        
         cons_violation = np.zeros(len(self.log_data)) 
         cons_violation[self._cons_violation_points] = self._cons_violation_size
 

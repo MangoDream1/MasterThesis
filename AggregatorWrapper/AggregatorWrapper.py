@@ -4,13 +4,13 @@ import networkx as nx
 from data.reader import create_transactions
 
 class AggregatorWrapper:
-    def __init__(self, Aggregator, selections, exclude_miner_receive=True, *args, **kwargs):
+    def __init__(self, Aggregator, exclude_miner_receive=True, *args, **kwargs):
         self._Aggregator = Aggregator
         self._args = args
         self._kwargs = kwargs
         self.exclude_miner_receive = exclude_miner_receive
 
-        self.aggregators = self.create_aggregators(selections)
+        self.aggregators = []
 
         self.result = defaultdict(lambda: {
             "result_cost": None,
@@ -20,12 +20,22 @@ class AggregatorWrapper:
             "bitcoin_txs": None
         })
 
-    def create_aggregators(self, selections):
-        for i, selection in enumerate(selections):
-            txs = list(create_transactions(selection, exclude_miner_receive=self.exclude_miner_receive))
+    def create_aggregators_from_selections(self, selections):
+        def generator():
+            for i, selection in enumerate(selections):
+                txs = list(create_transactions(selection, exclude_miner_receive=self.exclude_miner_receive))
 
-            self.result[i]["bitcoin_txs"] = sum(int(x.split("_")[2]) for x in selection)
-            yield from self._create_aggregator(i, txs)
+                self.result[i]["bitcoin_txs"] = sum(int(x.split("_")[2]) for x in selection)
+                yield from self._create_aggregator(i, txs)
+
+        self.aggregators = generator()
+
+    def create_aggregators_from_tx_lists(self, tx_lists):
+        def generator():
+            for i, txs in enumerate(tx_lists):
+                yield from self._create_aggregator(i, txs)
+
+        self.aggregators = generator()
 
     def _create_aggregator(self, i, txs):
         agg = self._Aggregator(*self._args, result=self.result[i], **self._kwargs)
