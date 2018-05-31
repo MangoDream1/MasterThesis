@@ -12,5 +12,7 @@ class SimulatedAggregatorWrapper(AggregatorWrapper):
 
         super().__init__(Aggregator, transactions)
 
-    def create_aggregators(self, txs):
-        yield from self._create_aggregator(0, txs)
+        self.create_aggregators_from_tx_lists([transactions])
+
+    def create_aggregators_from_selections(self):
+        pass
