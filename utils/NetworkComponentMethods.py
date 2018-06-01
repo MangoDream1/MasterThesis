@@ -66,17 +66,15 @@ class NetworkComponentMethods:
             combination = [node]
             
             while len(out_values) != 0 and len(in_values) != 0:
-                o = out_values.pop()
+                v += out_values.pop()
                 oi = out_indexes.pop()
                 
-                v += o
                 combination.append(oi)
 
                 while len(in_values) != 0:
-                    i = in_values.pop()
+                    v += in_values.pop()
                     ii = in_indexes.pop()
                     
-                    v += i
                     combination.append(ii)
 
                     if v > 0:
@@ -85,7 +83,8 @@ class NetworkComponentMethods:
                 if len(combination) > max_size:
                     break
 
-                if len(combination) >= min_size:
+                if len(combination) >= min_size and v > 0:
+                    print(combination)
                     yield combination
                     self._component_data["Cross"] += 1
                     combination = [node]
