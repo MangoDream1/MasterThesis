@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 class NetworkComponentMethods:
     def __init__(self):
         self._component_data = defaultdict(int)
-        self.network = None
-        self.matrix = None
+        self.network = np.array([])
+        self.matrix = np.array([])
 
     def get_loop(self, size, found_length=100): #TODO: experiment with found_length
         network = self.network.to_undirected()        
@@ -47,12 +47,15 @@ class NetworkComponentMethods:
                 yield clique
 
     def get_crosses(self, min_size=5, max_size=50):
-        indexes = np.arange(self.matrix.shape[0])
+        actors = np.arange(self.matrix.shape[0])
 
-        for node in indexes:
-            balance = self.matrix - self.matrix.T
-            m = balance[node].toarray()[0]
-            
+        for node in actors:
+            m = (self.matrix[node] - self.matrix.T[node]).toarray()[0]
+
+            selection = m!=0
+            m = m[selection]
+            indexes = actors[selection]
+
             out_values = list(m[m<0])
             in_values  = list(m[m>0])
             
