@@ -5,6 +5,11 @@ from AggregatorWrapper.SimulatedAggregatorWrapper import SimulatedAggregatorWrap
 from Aggregator.DividedLinearAggregator import DividedLinearAggregator
 from Aggregator.MultiAggregator import MultiAggregator
 
+def method(agg):
+        agg.iterate(agg.get_crosses)
+        for x in [3, 4, 5, 6]:
+            agg.iterate(agg.get_loop, x)
+        
 if __name__ == "__main__":
     BLOCK_HEIGHTS = [496114, 496150]
     TIMESTAMPS    = [1511704262, 1511781118]
@@ -12,17 +17,17 @@ if __name__ == "__main__":
 
     selection = select_on_block_height(*BLOCK_HEIGHTS, 2)
 
-    # wrapper = SimulatedAggregatorWrapper(MultiAggregator, 6, 20, DividedLinearAggregator)
+    # wrapper = SimulatedAggregatorWrapper(MultiAggregator, 300, 500, DividedLinearAggregator, func=method)
 
-    wrapper = AggregatorWrapper(MultiAggregator, DividedLinearAggregator, non_improvement=5)
+    wrapper = AggregatorWrapper(MultiAggregator, DividedLinearAggregator, func=method)
     wrapper.create_aggregators_from_selections([selection])
 
     agg = next(wrapper.aggregators)
 
-    print(agg.cost(agg.matrix))
+    print(agg.cost(agg.matrix), agg.matrix.shape)
 
     agg.iterate()
 
-    agg.plot_log_data()
+    print(wrapper.result[0])
 
-    print(agg.matrix.toarray())
+    agg.plot_log_data()
