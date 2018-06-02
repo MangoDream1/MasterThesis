@@ -23,7 +23,7 @@ class DividedLinearAggregator(GenericAggregator, NetworkComponentMethods):
         self._cons_violation_size = []
 
         self.non_improvement = non_improvement
-        self.linear_aggregator_kwargs = {}
+        self.linear_aggregator_kwargs = {} #FIXME: make function variable
 
     def iterate(self, set_generator, *generator_args):
         cons, cost = self.cost(self.matrix)
