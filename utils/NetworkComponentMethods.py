@@ -84,7 +84,6 @@ class NetworkComponentMethods:
                     break
 
                 if len(combination) >= min_size and v > 0:
-                    print(combination)
                     yield combination
                     self._component_data["Cross"] += 1
                     combination = [node]
