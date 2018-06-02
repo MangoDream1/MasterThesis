@@ -4,7 +4,7 @@ import networkx as nx
 from data.reader import create_transactions
 
 class AggregatorWrapper:
-    def __init__(self, Aggregator, exclude_miner_receive=True, *args, **kwargs):
+    def __init__(self, Aggregator, *args, exclude_miner_receive=True, **kwargs):
         self._Aggregator = Aggregator
         self._args = args
         self._kwargs = kwargs
