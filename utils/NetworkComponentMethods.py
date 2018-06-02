@@ -10,9 +10,11 @@ class NetworkComponentMethods:
         self.network = np.array([])
         self.matrix = np.array([])
 
-    def get_loop(self, size, found_length=100): #TODO: experiment with found_length
+        self.found_length = 100 #TODO: experiment with found_length
+
+    def get_loop(self, size): 
         network = self.network.to_undirected()        
-        found = deque([], found_length)
+        found = deque([], self.found_length)
 
         def recursion(node, start_node, loop):        
             if len(loop) < size:    
@@ -48,6 +50,7 @@ class NetworkComponentMethods:
 
     def get_crosses(self, min_size=5, max_size=50):
         actors = np.arange(self.matrix.shape[0])
+        found = deque([], self.found_length)        
 
         for node in actors:
             m = (self.matrix[node] - self.matrix.T[node]).toarray()[0]
@@ -84,8 +87,13 @@ class NetworkComponentMethods:
                     break
 
                 if len(combination) >= min_size and v > 0:
-                    yield combination
-                    self._component_data["Cross"] += 1
+                    sorted_combi = sorted(combination)
+
+                    if sorted_combi not in found:
+                        found.append(sorted_combi)
+                        yield sorted_combi  
+                        self._component_data["Cross"] += 1
+
                     combination = [node]
                     v = 0
     
