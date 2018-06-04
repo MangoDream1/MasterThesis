@@ -39,14 +39,23 @@ class MultiAggregator(GenericAggregator):
             
             started.get()
             queue.put(1)
-            
+
+        def error_process(*args):
+            print("\n")
+            print("---ERROR---")
+            print(args)
+            print("\n")
+
+            started.get()            
+            queue.put(1)
+
         i = 0
         for subgraph in subgraphs:
             started.put(1) 
             i += 1
 
             pool.apply_async(self._single_process, 
-                (self.func, self.network, subgraph, self.Aggregator, *self._args,), self._kwargs, handle_process, lambda x: print("Error: ", x))
+                (self.func, self.network, subgraph, self.Aggregator, *self._args,), self._kwargs, handle_process, error_process)
         
         update_progress = progress_bar(0, i)
         _max = i
@@ -56,7 +65,7 @@ class MultiAggregator(GenericAggregator):
             queue.get()
             i -= 1
 
-        super().iterate()
+        super().iterate()        
 
     @staticmethod
     def _single_process(func, graph, subgraph, Aggregator, *args, **kwargs):         
