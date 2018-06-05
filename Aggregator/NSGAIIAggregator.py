@@ -13,7 +13,7 @@ from constants.constants import *
 
 
 class NSGAIIAggregator(GenericAggregator):
-    def __init__(self, population_size=100, mutation_rate=0.1, deviations_divider=3, **kwargs):
+    def __init__(self, population_size=100, mutation_rate=0.01, deviations_divider=3, **kwargs):
         super().__init__(**kwargs)
 
         self.population_size = population_size
