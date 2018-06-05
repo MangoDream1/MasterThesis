@@ -116,13 +116,13 @@ class GenericAggregator:
 
         log_data = np.array(self.log_data)
 
-        plt.subplot(131).title.set_text("cost")
+        plt.subplot(131).title.set_text("Cost")
         plt.plot(log_data[:, 0])
 
-        plt.subplot(132).title.set_text("cons_violation")
+        plt.subplot(132).title.set_text("Constraint violation")
         plt.plot(log_data[:, 1])
 
-        plt.subplot(133).title.set_text("combined_cost")
+        plt.subplot(133).title.set_text("Combined cost")
         plt.plot(log_data[:, 2])
 
         if show:
