@@ -10,6 +10,11 @@ agg = next(wrapper.aggregators)
 nx.draw(agg.network, with_labels=True)
 plt.show()
 
+print(agg.cost(agg.matrix))
+
+
 agg.iterate(10000)
+
+print(agg.cost(agg.matrix))
 
 agg.plot_log_data()

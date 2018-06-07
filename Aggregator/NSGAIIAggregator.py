@@ -13,8 +13,8 @@ from constants.constants import *
 
 
 class NSGAIIAggregator(GenericAggregator):
-    def __init__(self, population_size=100, mutation_rate=0.01, deviations_divider=3, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, population_size=100, mutation_rate=0.1, deviations_divider=3, **kwargs):
+        super().__init__(transaction_cost=1, balance_diff_multiplier=1, **kwargs)
 
         self.population_size = population_size
 
@@ -24,6 +24,10 @@ class NSGAIIAggregator(GenericAggregator):
         self.tournament_size = 2
         self.crossover_method = self.SBX_crossover
         self.compared_cost = "combined_cost"
+        
+        self.first_compared_cost = "cons_violation"
+        self.second_compared_cost = "cost"
+
         self.correction = True
         
         self.single_log_data = []
@@ -51,7 +55,12 @@ class NSGAIIAggregator(GenericAggregator):
         for pid, pv in enumerate(P):
             for qid, qv in enumerate(P):
                 # if p dominates q -> less self.cost
-                if getattr(pv, self.compared_cost) <= getattr(qv, self.compared_cost):
+                if getattr(pv, self.first_compared_cost) != 0 and getattr(qv, self.first_compared_cost) != 0:
+                    comparison = getattr(pv, self.first_compared_cost) <= getattr(qv, self.first_compared_cost)
+                else:
+                    comparison = getattr(pv, self.second_compared_cost) <= getattr(qv, self.second_compared_cost) 
+
+                if comparison:                
                     Sx[pid].append(qid)
                 else:
                     nx[pid] += 1
@@ -146,7 +155,12 @@ class NSGAIIAggregator(GenericAggregator):
         for _ in range(self.tournament_size-1):
             candidate = choice(P)
 
-            if getattr(candidate, self.compared_cost) > getattr(winner, self.compared_cost):                
+            if getattr(candidate, self.first_compared_cost) != 0 and getattr(winner, self.first_compared_cost) != 0:
+                comparison = getattr(candidate, self.first_compared_cost) < getattr(winner, self.first_compared_cost)
+            else:
+                comparison = getattr(candidate, self.second_compared_cost) < getattr(winner, self.second_compared_cost) 
+
+            if getattr(candidate, self.compared_cost) < getattr(winner, self.compared_cost):                
                 winner = candidate
 
         return winner
@@ -217,15 +231,15 @@ class NSGAIIAggregator(GenericAggregator):
     def plot_log_data(self):
         plt.figure(1, figsize=(20, 5))
 
-        plt.subplot(131).title.set_text("cost")
+        plt.subplot(131).title.set_text("Cost")
         plt.plot(np.array(self.single_log_data)[:, 0])
         plt.plot(np.array(self.log_data)[:, 0])
 
-        plt.subplot(132).title.set_text("cons_violation")
+        plt.subplot(132).title.set_text("Constraint Violation")
         plt.plot(np.array(self.single_log_data)[:, 1])
         plt.plot(np.array(self.log_data)[:, 1])
 
-        plt.subplot(133).title.set_text("combined_cost")
+        plt.subplot(133).title.set_text("Combined Cost")
         plt.plot(np.array(self.single_log_data)[:, 2])
         plt.plot(np.array(self.log_data)[:, 2])
 
