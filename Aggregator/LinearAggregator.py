@@ -66,8 +66,7 @@ class LinearAggregator(GenericAggregator):
             print(self.start_matrix.toarray())
             return result
 
-        self.matrix = np.round(self.problem_matrix.value * self.abs_max) # denormalize
-        self.matrix = np.abs(self.matrix.astype(int))
+        self.matrix = np.round(self.problem_matrix.value * self.abs_max).astype(int) # denormalize
         self.network = nx.from_numpy_matrix(self.matrix, create_using=nx.DiGraph())
 
         super().iterate()
