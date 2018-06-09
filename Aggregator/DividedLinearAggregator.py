@@ -87,13 +87,13 @@ class DividedLinearAggregator(GenericAggregator, NetworkComponentMethods):
 
         for plot in plots:
             for xc in self._iteration_points:
-                plt.subplot(plot).axvline(x=xc, color='red', label=plot, ymax=0.03) # red for new epoch
+                plt.subplot(plot).axvline(x=xc, color='green', label=plot, ymax=0.03) # green for new epoch
 
             for xc in self._end_iteration_points:
                 plt.subplot(plot).axvline(x=xc, color='black', label=plot, ymax=1) # black new generator
 
             for xc in self._non_improvement_points:
-                plt.subplot(plot).axvline(x=xc, color='green', label=plot, ymax=0.04) # green start non_improvement
+                plt.subplot(plot).axvline(x=xc, color='red', label=plot, ymax=0.04) # red start non_improvement
 
             for xc in self._cons_violation_points:
                 plt.subplot(plot).axvline(x=xc, color='purple', label=plot, ymax=0.02) # purple constraint violation rejected
