@@ -71,7 +71,7 @@ for n_transactions in transaction_sizes:
                 if v:
                     average[k] += v / n_iterations
         
-        d = Decimal(average["total"] / average["result_cost"])
+        d = Decimal((n_transactions - average["total"]) / average["result_cost"])
 
         average["ratio"] = format(d, ".2e")
         data[name][n_transactions] = average
