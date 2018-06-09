@@ -89,7 +89,7 @@ class NetworkComponentMethods:
                     if sorted_combi not in found:
                         found.append(sorted_combi)
                         yield sorted_combi  
-                        self.component_data["Cross"] += 1
+                        self.component_data["Cross%s" % min_size] += 1
 
                     combination = [node]
                     v = 0
