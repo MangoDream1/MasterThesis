@@ -76,7 +76,7 @@ for n_transactions in transaction_sizes:
         average["ratio"] = format(d, ".2e")
         data[name][n_transactions] = average
         
-    with open(SAVE_NAME % "selection_data", "w") as f:
+    with open(SAVE_NAME % ("selection_data", "json"), "w") as f:
                 json.dump(data, f, indent=3)
 
     print("finsished ", n_transactions)
