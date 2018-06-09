@@ -7,7 +7,7 @@ import numpy as np
 import scipy as sc
 
 class MultiAggregator(GenericAggregator):
-    def __init__(self, Aggregator, pool_size=10, func=lambda agg: agg.iterate(), *args, **kwargs):
+    def __init__(self, Aggregator, pool_size=10, pool=None, progress=True, func=lambda agg: agg.iterate(), *args, **kwargs):
         super().__init__(transaction_cost=1, balance_diff_multiplier=1)
         
         self.Aggregator = Aggregator
@@ -16,7 +16,12 @@ class MultiAggregator(GenericAggregator):
 
         self.func = func
 
+        self.progress = progress
+
         self.pool_size = pool_size
+        self.pool = pool
+        if not pool:
+            self.pool = Pool(self.pool_size)
 
     def iterate(self):
         cons, cost = self.cost(self.matrix)
@@ -26,8 +31,6 @@ class MultiAggregator(GenericAggregator):
 
         queue = Queue()
         started = Queue()
-
-        pool = Pool(self.pool_size)
 
         def handle_process(*args):
             rnodes, rmatrix = args[0]
@@ -54,14 +57,17 @@ class MultiAggregator(GenericAggregator):
             started.put(1) 
             i += 1
 
-            pool.apply_async(self._single_process, 
+            self.pool.apply_async(self._single_process, 
                 (self.func, self.network, subgraph, self.Aggregator, *self._args,), self._kwargs, handle_process, error_process)
         
-        update_progress = progress_bar(0, i)
-        _max = i
+        if self.progress:
+            update_progress = progress_bar(0, i)
+            _max = i
 
         while i != 0:
-            update_progress(_max - i)
+            if self.progress:
+                update_progress(_max - i)
+            
             queue.get()
             i -= 1
 
