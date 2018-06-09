@@ -1,0 +1,157 @@
+{
+   "cross+loop": {
+      "100": {
+         "total": 11.0,
+         "result_cost": 95.0,
+         "n_actors": 85.69999999999999,
+         "Loop 3": 1.1,
+         "start_n_txs": 100.0,
+         "ratio": "2.20e+0",
+         "Loop 4": 1.4000000000000001,
+         "Loop 5": 1.5000000000000004,
+         "Cross": 7.0
+      },
+      "500": {
+         "total": 491.7,
+         "result_cost": 124.7,
+         "n_actors": 100.0,
+         "Loop 3": 22.5,
+         "start_n_txs": 500.0,
+         "ratio": "1.31e+0",
+         "Loop 4": 137.7,
+         "Loop 5": 82.2,
+         "Cross": 249.29999999999998
+      }
+   },
+   "loops+cross": {
+      "100": {
+         "total": 11.599999999999998,
+         "result_cost": 95.10000000000001,
+         "n_actors": 85.69999999999999,
+         "Loop 3": 1.3,
+         "start_n_txs": 100.0,
+         "ratio": "2.37e+0",
+         "Loop 4": 1.4000000000000001,
+         "Loop 5": 2.0,
+         "Cross": 6.9
+      },
+      "500": {
+         "total": 899.4999999999999,
+         "result_cost": 116.3,
+         "n_actors": 100.0,
+         "Loop 3": 156.7,
+         "start_n_txs": 500.0,
+         "ratio": "2.34e+0",
+         "Loop 4": 683.1,
+         "Loop 5": 28.3,
+         "Cross": 31.4
+      }
+   },
+   "loop3": {
+      "100": {
+         "total": 1.3,
+         "result_cost": 98.2,
+         "n_actors": 85.69999999999999,
+         "Loop 3": 1.3,
+         "start_n_txs": 100.0,
+         "ratio": "7.22e-1"
+      },
+      "500": {
+         "total": 156.7,
+         "result_cost": 365.2,
+         "n_actors": 100.0,
+         "Loop 3": 156.7,
+         "start_n_txs": 500.0,
+         "ratio": "1.16e+0"
+      }
+   },
+   "cross10": {
+      "100": {
+         "ratio": "0.00e+2",
+         "total": 0,
+         "result_cost": 99.50000000000001,
+         "n_actors": 85.69999999999999,
+         "start_n_txs": 100.0
+      },
+      "500": {
+         "total": 33.0,
+         "result_cost": 373.59999999999997,
+         "n_actors": 100.0,
+         "start_n_txs": 500.0,
+         "ratio": "2.61e-1",
+         "Cross": 33.0
+      }
+   },
+   "loop5": {
+      "100": {
+         "total": 2.4000000000000004,
+         "result_cost": 97.3,
+         "n_actors": 85.69999999999999,
+         "start_n_txs": 100.0,
+         "ratio": "8.89e-1",
+         "Loop 5": 2.4000000000000004
+      },
+      "500": {
+         "total": 33793.9,
+         "result_cost": 119.4,
+         "n_actors": 100.0,
+         "start_n_txs": 500.0,
+         "ratio": "8.88e+1",
+         "Loop 5": 33793.9
+      }
+   },
+   "cross5": {
+      "100": {
+         "total": 7.0,
+         "result_cost": 99.00000000000001,
+         "n_actors": 85.69999999999999,
+         "start_n_txs": 100.0,
+         "ratio": "7.00e+0",
+         "Cross": 7.0
+      },
+      "500": {
+         "total": 249.29999999999998,
+         "result_cost": 267.2,
+         "n_actors": 100.0,
+         "start_n_txs": 500.0,
+         "ratio": "1.07e+0",
+         "Cross": 249.29999999999998
+      }
+   },
+   "clique50": {
+      "100": {
+         "total": 1044.5,
+         "result_cost": 97.8,
+         "Clique": 1044.5,
+         "n_actors": 85.69999999999999,
+         "start_n_txs": 100.0,
+         "ratio": "4.75e+2"
+      },
+      "500": {
+         "total": 4349.4,
+         "result_cost": 360.4,
+         "Clique": 4349.4,
+         "n_actors": 100.0,
+         "start_n_txs": 500.0,
+         "ratio": "3.12e+1"
+      }
+   },
+   "loop4": {
+      "100": {
+         "total": 1.4000000000000001,
+         "result_cost": 98.2,
+         "n_actors": 85.69999999999999,
+         "start_n_txs": 100.0,
+         "ratio": "7.78e-1",
+         "Loop 4": 1.4000000000000001
+      },
+      "500": {
+         "total": 1843.3,
+         "result_cost": 120.80000000000001,
+         "n_actors": 100.0,
+         "start_n_txs": 500.0,
+         "ratio": "4.86e+0",
+         "Loop 4": 1843.3
+      }
+   }
+}
