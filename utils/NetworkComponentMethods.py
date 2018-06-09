@@ -10,7 +10,7 @@ class NetworkComponentMethods:
         self.network = np.array([])
         self.matrix = np.array([])
 
-        self.found_length = 100 #TODO: experiment with found_length
+        self.found_length = 1000 #TODO: experiment with found_length
 
     def get_loop(self, size): 
         network = self.network.to_undirected()        
@@ -27,11 +27,11 @@ class NetworkComponentMethods:
 
                 if sorted_loop not in found:
                     found.append(sorted_loop)
+                    self.component_data[name] += 1
                     yield sorted_loop      
 
         name = "Loop %s" % size
         for node in network.nodes:
-            self.component_data[name] += 1
             yield from recursion(node, node, [node])
 
     def get_connected(self, max_length):
