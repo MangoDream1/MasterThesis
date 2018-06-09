@@ -6,9 +6,9 @@ from Aggregator.DividedLinearAggregator import DividedLinearAggregator
 from Aggregator.MultiAggregator import MultiAggregator
 
 def method(agg):
-        agg.iterate(agg.get_crosses)
-        for x in [3, 4, 5, 6]:
-            agg.iterate(agg.get_loop, x)
+    agg.iterate(agg.get_crosses)
+    for x in [3, 4, 5, 6]:
+        agg.iterate(agg.get_loop, x)
         
 if __name__ == "__main__":
     BLOCK_HEIGHTS = [496114, 496150]
