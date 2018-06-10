@@ -19,7 +19,7 @@ if __name__ == "__main__":
     TX_SIZES     = [50, 100, 500, 1000, 5000]
     n_iterations = 10
 
-    pool_size    = 4
+    pool_size = 8
     pool = Pool(pool_size)
 
     pb = progress_bar(0, len(ACTORS_SIZES) * len(TX_SIZES) * n_iterations)
@@ -27,7 +27,6 @@ if __name__ == "__main__":
 
     for n_actors in ACTORS_SIZES:
         actors = [hex(x) for x in range(n_actors)]
-        averaged_costs = []
 
         for n_txs in TX_SIZES:
             costs = []
@@ -49,9 +48,10 @@ if __name__ == "__main__":
                 i += 1
 
             average = Decimal(sum(costs) / len(costs))
-            averaged_costs.append(format(average, ".3e"))
 
-        with open(SAVE_NAME % ("result_matrix", "txt"), "a") as f:
-            f.write("\t".join(averaged_costs))
+            with open(SAVE_NAME % ("result_matrix", "txt"), "a") as f:
+                f.write("%s\t" % format(average, ".3e"))
+            
+        with open(SAVE_NAME % ("result_matrix", "txt"), "a") as f:            
             f.write("\n")
 
