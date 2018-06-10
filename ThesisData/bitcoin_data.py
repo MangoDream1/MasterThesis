@@ -16,12 +16,11 @@ def method(agg):
     for x in [3, 4, 5, 6]:
         agg.iterate(agg.get_loop, x)
 
-def solve_hours(hours):
+def solve_hours(hours, n):
     BEGIN_DATE = datetime(2017, 1, 1)
     TIMESTAMPS = []    
 
     start = BEGIN_DATE
-    n = int(24 / hours)
 
     for _ in range(n):
         end = start + timedelta(hours=hours)
@@ -47,8 +46,11 @@ def solve_hours(hours):
             json.dump(wrapper.result, f)
         
 if __name__ == "__main__":
-    n = 1
-    if len(sys.argv) > 1:
+    hour_bin = 1
+    n = 24
+
+    if len(sys.argv) > 2:
+        hour_bin = int(sys.argv[-2])
         n = int(sys.argv[-1])
 
-    solve_hours(n)
+    solve_hours(hour_bin, n)
