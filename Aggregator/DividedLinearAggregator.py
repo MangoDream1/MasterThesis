@@ -22,6 +22,8 @@ class DividedLinearAggregator(GenericAggregator, NetworkComponentMethods):
         
         self._cons_violation_size = []
 
+        self._correction = False        
+
         self.non_improvement = non_improvement
         self.linear_aggregator_kwargs = {} #FIXME: make function variable
 

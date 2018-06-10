@@ -20,6 +20,8 @@ class GenericAggregator:
 
         self.log_data = []
         self.result = result
+
+        self._correction = True
     
     def set_init_variables(self, matrix, network):
         self.matrix = matrix.asformat(MATRIX_FORMAT)
@@ -32,8 +34,9 @@ class GenericAggregator:
         self._get_goal_balance()
         self._get_abs_max()
 
-        self.correction_matrix = np.ones(self.matrix.shape)
-        np.fill_diagonal(self.correction_matrix, 0.)
+        if self._correction:
+            self.correction_matrix = np.ones(self.matrix.shape)
+            np.fill_diagonal(self.correction_matrix, 0.)
 
     def corrections(self, matrix):
         matrix = matrix.multiply(

@@ -16,6 +16,8 @@ class LinearAggregator(GenericAggregator):
         self.solver = solver
         self._calculate_end_balances = lambda matrix: sum_entries(matrix.T - matrix, axis=0)
 
+        self._correction = False        
+
     def set_init_variables(self, matrix, network):
         super().set_init_variables(matrix, network)
 

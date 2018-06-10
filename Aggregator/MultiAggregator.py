@@ -20,6 +20,9 @@ class MultiAggregator(GenericAggregator):
 
         self.pool_size = pool_size
         self.pool = pool
+
+        self._correction = False
+
         if not pool:
             self.pool = Pool(self.pool_size)
 
