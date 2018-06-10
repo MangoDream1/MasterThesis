@@ -3,6 +3,9 @@ def selection_method(agg):
     for x in [3, 4, 5, 6]:
         agg.iterate(agg.get_loop, x)
 
+ACTORS_SIZES = [50, 100, 500, 1000, 5000]
+TX_SIZES     = [50, 100, 500, 1000, 5000]
+
 if __name__ == "__main__":
     from ThesisData.data_constants import SAVE_NAME
     from decimal import Decimal
@@ -14,9 +17,6 @@ if __name__ == "__main__":
     from AggregatorWrapper.AggregatorWrapper import AggregatorWrapper
     from multiprocessing import Pool
     
-
-    ACTORS_SIZES = [50, 100, 500, 1000, 5000]
-    TX_SIZES     = [50, 100, 500, 1000, 5000]
     n_iterations = 10
 
     pool_size = 8
