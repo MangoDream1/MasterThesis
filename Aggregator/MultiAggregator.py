@@ -7,12 +7,14 @@ import numpy as np
 import scipy as sc
 
 class MultiAggregator(GenericAggregator):
-    def __init__(self, Aggregator, pool_size=10, pool=None, progress=True, func=lambda agg: agg.iterate(), *args, **kwargs):
+    def __init__(self, Aggregator, *args, result={}, pool_size=10, pool=None, progress=True, func=lambda agg: agg.iterate(), **kwargs):
         super().__init__(transaction_cost=1, balance_diff_multiplier=1)
         
         self.Aggregator = Aggregator
         self._args = args
         self._kwargs = kwargs
+
+        self.result = result
 
         self.func = func
 
@@ -47,10 +49,9 @@ class MultiAggregator(GenericAggregator):
             queue.put(1)
 
         def error_process(*args):
-            print("\n")
-            print("---ERROR---")
+            print("\n---ERROR---")
             print(args)
-            print("\n")
+            print("---ERROR---\n")            
 
             started.get()            
             queue.put(1)
