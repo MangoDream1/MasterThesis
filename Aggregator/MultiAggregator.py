@@ -25,6 +25,8 @@ class MultiAggregator(GenericAggregator):
 
         self._correction = False
 
+        # self.final_stretch = Queue()
+
         if not pool:
             self.pool = Pool(self.pool_size)
 
@@ -49,7 +51,7 @@ class MultiAggregator(GenericAggregator):
             queue.put(1)
 
         def error_process(*args):
-            print("\n---ERROR---")
+            print("\n\n---ERROR---")
             print(args)
             print("---ERROR---\n")            
 
@@ -62,7 +64,8 @@ class MultiAggregator(GenericAggregator):
             i += 1
 
             self.pool.apply_async(self._single_process, 
-                (self.func, self.network, subgraph, self.Aggregator, *self._args,), self._kwargs, handle_process, error_process)
+                (self.func, self.network, subgraph, self.Aggregator, *self._args,), 
+                self._kwargs, handle_process, error_process)
         
         if self.progress:
             update_progress = progress_bar(0, i)
@@ -75,7 +78,10 @@ class MultiAggregator(GenericAggregator):
             queue.get()
             i -= 1
 
-        super().iterate()        
+            # if i < self.pool_size:
+            #     self.final_stretch.put(1)
+
+        super().iterate()      
 
     @staticmethod
     def _single_process(func, graph, subgraph, Aggregator, *args, **kwargs):         
