@@ -25,7 +25,6 @@ class MultiAggregator(GenericAggregator):
 
         self._correction = False
 
-        # self.final_stretch = Queue()
 
         if not pool:
             self.pool = Pool(self.pool_size)
@@ -78,8 +77,6 @@ class MultiAggregator(GenericAggregator):
             queue.get()
             i -= 1
 
-            # if i < self.pool_size:
-            #     self.final_stretch.put(1)
 
         super().iterate()      
 
