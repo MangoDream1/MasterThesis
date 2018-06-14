@@ -1,0 +1,72 @@
+{
+    "0": {
+        "start_n_txs": 5671,
+        "result_cost": 4308,
+        "bitcoin_txs": 1116,
+        "n_actors": 4949,
+        "result_cons": 0
+    },
+    "1": {
+        "start_n_txs": 6856,
+        "result_cost": 5798,
+        "bitcoin_txs": 2133,
+        "n_actors": 7175,
+        "result_cons": 0
+    },
+    "2": {
+        "start_n_txs": 7193,
+        "result_cost": 5954,
+        "bitcoin_txs": 2372,
+        "n_actors": 7265,
+        "result_cons": 0
+    },
+    "3": {
+        "start_n_txs": 7751,
+        "result_cost": 7080,
+        "bitcoin_txs": 1842,
+        "n_actors": 8179,
+        "result_cons": 0
+    },
+    "4": {
+        "start_n_txs": 7807,
+        "result_cost": 7473,
+        "bitcoin_txs": 2270,
+        "n_actors": 9099,
+        "result_cons": 0
+    },
+    "5": {
+        "start_n_txs": 8225,
+        "result_cost": 7074,
+        "bitcoin_txs": 3158,
+        "n_actors": 8782,
+        "result_cons": 0
+    },
+    "6": {
+        "start_n_txs": 7703,
+        "result_cost": 6959,
+        "bitcoin_txs": 2867,
+        "n_actors": 8642,
+        "result_cons": 0
+    },
+    "7": {
+        "start_n_txs": 7930,
+        "result_cost": 7218,
+        "bitcoin_txs": 2340,
+        "n_actors": 8699,
+        "result_cons": 0
+    },
+    "8": {
+        "start_n_txs": 8437,
+        "result_cost": 7872,
+        "bitcoin_txs": 2427,
+        "n_actors": 9713,
+        "result_cons": 0
+    },
+    "9": {
+        "start_n_txs": 9002,
+        "result_cost": 8372,
+        "bitcoin_txs": 2556,
+        "n_actors": 10227,
+        "result_cons": 0
+    }
+}
