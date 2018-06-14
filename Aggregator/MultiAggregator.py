@@ -2,6 +2,7 @@ from Aggregator.GenericAggregator import GenericAggregator
 from utils.progress_bar import progress_bar
 
 from multiprocessing import Process, Queue, Pool
+from threading import Event
 import networkx as nx
 import numpy as np
 import scipy as sc
@@ -22,6 +23,8 @@ class MultiAggregator(GenericAggregator):
 
         self.pool_size = pool_size
         self.pool = pool
+
+        self.final_stretch_event = Event()
 
         self._correction = False
 
@@ -76,6 +79,9 @@ class MultiAggregator(GenericAggregator):
             
             queue.get()
             i -= 1
+
+            if i < 3:
+                self.final_stretch_event.set()
 
 
         super().iterate()      

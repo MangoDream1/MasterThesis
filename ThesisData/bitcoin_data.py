@@ -4,7 +4,7 @@ import sys
 from random import randint
 from pprint import pprint
 from multiprocessing import Pool
-
+from threading import Thread
 
 from data.reader import create_transactions, select_on_timestamp, select_on_block_height
 
@@ -13,6 +13,7 @@ from AggregatorWrapper.SimulatedAggregatorWrapper import SimulatedAggregatorWrap
 from Aggregator.DividedLinearAggregator import DividedLinearAggregator
 from Aggregator.MultiAggregator import MultiAggregator
 from ThesisData.data_constants import SAVE_NAME
+from Objects.SimulatedTransaction import SimulatedTransaction
 
 
 def method(agg):
@@ -63,8 +64,8 @@ def selection_random_blocks(n):
 
 def solve_hours(hours, n, name):
     # selection = selection_sequential(hours,n)
-    # selection = selection_random(hours, n)
-    selection = selection_random_blocks(n)
+    selection = selection_random(hours, n)
+    # selection = selection_random_blocks(n)
     pprint(selection)    
 
     print("Total number of blocks: ", sum(len(x) for x in selection))
@@ -75,7 +76,13 @@ def solve_hours(hours, n, name):
     wrapper = AggregatorWrapper(MultiAggregator, DividedLinearAggregator, func=method, pool=pool)
     wrapper.create_aggregators_from_selections(selection)
 
-    for agg in wrapper.aggregators:
+    # actors = [hex(x) for x in range(1000)]
+    # transactions = [SimulatedTransaction(actors, 1000, 500, 60*60*24*30) 
+    #                 for _ in range(500)]
+
+    # wrapper.create_aggregators_from_tx_lists([transactions]*10)
+
+    def process(agg):
         print(agg.cost(agg.matrix), agg.matrix.shape)
 
         agg.iterate()
@@ -87,11 +94,23 @@ def solve_hours(hours, n, name):
             dct = dict(wrapper.result)
             dct = {x: {k: int(v) for k, v in inner.items() if v != None} for x, inner in dct.items()}
 
-            json.dump(dct, f)
+            json.dump(dct, f, indent=4)
+
+    threads = []
+    for agg in wrapper.aggregators:
+        t = Thread(target=process, args=(agg,))
+        threads.append(t)
+
+        t.start()
+
+        agg.final_stretch_event.wait()
+
+    for t in threads:
+        t.join()
         
 if __name__ == "__main__":
     hour_bin = 1
-    n = 24
+    n = 10
     name = "bitcoin_%shour_data" % hour_bin
 
     if len(sys.argv) > 3:
