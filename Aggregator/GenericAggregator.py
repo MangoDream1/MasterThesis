@@ -34,6 +34,8 @@ class GenericAggregator:
         self._get_goal_balance()
         self._get_abs_max()
 
+        self.result["start_cost"] = self.cost(self.matrix)[1]
+
         if self._correction:
             self.correction_matrix = np.ones(self.matrix.shape)
             np.fill_diagonal(self.correction_matrix, 0.)
