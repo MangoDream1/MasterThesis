@@ -1,0 +1,16 @@
+{
+    "0": {
+        "bitcoin_txs": 9956,
+        "result_cost": 28573,
+        "start_n_txs": 31845,
+        "start_cost": 29398,
+        "result_cons": 0,
+        "n_actors": 30958
+    },
+    "1": {
+        "n_actors": 46131,
+        "bitcoin_txs": 10670,
+        "start_n_txs": 51911,
+        "start_cost": 43171
+    }
+}
