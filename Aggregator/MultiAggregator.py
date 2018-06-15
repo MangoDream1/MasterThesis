@@ -81,6 +81,7 @@ class MultiAggregator(GenericAggregator):
             i -= 1
 
             if i < 3:
+                super().iterate()
                 self.final_stretch_event.set()
 
 

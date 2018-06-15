@@ -62,6 +62,14 @@ def selection_random_blocks(n):
 
     return [[x[0]] for x in selection]
 
+def save_result(name, wrapper):
+    with open(SAVE_NAME % (name, "json"), "w") as f:
+        # needed for a strange problem with defaultdict and json
+        dct = dict(wrapper.result)
+        dct = {x: {k: int(v) for k, v in inner.items() if v != None} for x, inner in dct.items()}
+
+        json.dump(dct, f, indent=4)
+
 def solve_hours(hours, n, name):
     # selection = selection_sequential(hours,n)
     selection = selection_random(hours, n)
@@ -87,15 +95,8 @@ def solve_hours(hours, n, name):
 
         agg.iterate()
 
-        print(agg.cost(agg.matrix), agg.matrix.shape)
+        print("\n", agg.cost(agg.matrix), agg.matrix.shape)
         
-        with open(SAVE_NAME % (name, "json"), "w") as f:
-            # needed for a strange problem with defaultdict and json
-            dct = dict(wrapper.result)
-            dct = {x: {k: int(v) for k, v in inner.items() if v != None} for x, inner in dct.items()}
-
-            json.dump(dct, f, indent=4)
-
     threads = []
     for agg in wrapper.aggregators:
         t = Thread(target=process, args=(agg,))
@@ -104,10 +105,13 @@ def solve_hours(hours, n, name):
         t.start()
 
         agg.final_stretch_event.wait()
-
+        save_result(name, wrapper)
+        
     for t in threads:
         t.join()
         
+    save_result(name, wrapper)
+
 if __name__ == "__main__":
     hour_bin = 1
     n = 10
