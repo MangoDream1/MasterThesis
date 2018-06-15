@@ -2,12 +2,15 @@ from multiprocessing import Process, Queue
 import time
 import psutil
 from threading import Event, Thread
+import json
 
 from Objects.SimulatedTransaction import SimulatedTransaction
 from AggregatorWrapper.AggregatorWrapper import AggregatorWrapper
 from Aggregator.DividedLinearAggregator import DividedLinearAggregator
 from Aggregator.MultiAggregator import MultiAggregator
 from Aggregator.LinearAggregator import LinearAggregator
+from ThesisData.data_constants import SAVE_NAME
+from utils.progress_bar import progress_bar
 
 def cut_off(n, finished_event, cut_event, queue, process):    
     while n != 0:
@@ -43,7 +46,7 @@ def start(func, args, kwargs={}):
     cut_event      = Event()
 
     cut_off_thread  = Thread(target=cut_off, 
-        args=(10, finished_event, cut_event, q, p,))
+        args=(60*5, finished_event, cut_event, q, p,))
     complete_thread = Thread(target=complete, args=(finished_event, p,))
 
     p.start()
@@ -55,8 +58,12 @@ def start(func, args, kwargs={}):
     was_cut = cut_event.is_set()
     result = q.get()
     
-    return result, was_cut, resource_data.cpu_percent(), resource_data.cpu_times()
-
+    return {
+        "result": result,
+        "was_cut": was_cut,
+        "resources": resource_data.as_dict(attrs=["cpu_percent", "cpu_times"])
+    }
+        
 def aggregate(Aggregator, transactions, args, kwargs, queue):
     wrapper = AggregatorWrapper(Aggregator, *args, **kwargs)
     wrapper.create_aggregators_from_tx_lists([transactions])
@@ -82,11 +89,43 @@ def main(n_actors, n_transactions):
 
     return lin_result, mul_result
 
-if __name__ == '__main__':
-    lin_result, mul_result = main(10, 10)
+def fix_dct(dct):
+    if not dct:
+        return None
 
-    print(lin_result)
-    print(mul_result)
+    # needed for a strange problem with defaultdict and json
+    return {k: int(v) for k, v in dct.items() if v != None}
+
+if __name__ == '__main__':
+    ACTORS_SIZES = [10, 25, 50]
+    TX_SIZES     = [10, 50, 100, 500]
+    n_iterations = 100
+
+    data = {}
+
+    pb = progress_bar(0, len(ACTORS_SIZES) * len(TX_SIZES) * n_iterations)
+    progress = 0
+
+    for n_actors in ACTORS_SIZES:
+        data[n_actors] = {}
+        for n_txs in TX_SIZES:
+            data[n_actors][n_txs] = {}
+            for i in range(n_iterations):
+                pb(progress)
+                
+                lin_result, mul_result = main(n_actors, n_txs)
+
+                lin_result["result"] = fix_dct(lin_result["result"])
+                mul_result["result"] = fix_dct(mul_result["result"])
+
+                data[n_actors][n_txs][i] = {}
+                data[n_actors][n_txs][i]["gurobi"] = lin_result
+                data[n_actors][n_txs][i]["heuristics"] = mul_result
+
+                with open(SAVE_NAME % ("linear_data", "json"), "w") as f:
+                    json.dump(data, f, indent=4, sort_keys=True)
+
+                progress += 1
 
 
     
