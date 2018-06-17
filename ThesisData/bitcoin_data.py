@@ -23,44 +23,43 @@ def method(agg):
 
 def selection_sequential(hours,n):
     BEGIN_DATE = datetime(2017, 1, 1)
-    TIMESTAMPS = []    
 
     start = BEGIN_DATE
 
     for _ in range(n):
         end = start + timedelta(hours=hours)
-        TIMESTAMPS.append((start.timestamp(), end.timestamp()))
+        yield select_on_timestamp(start.timestamp(), end.timestamp(), None)
         start = end
 
-    selection = [select_on_timestamp(*ts, None) for ts in TIMESTAMPS]
-    
-    print("Start block:\t", selection[0][0])
-    print("End block:\t", selection[-1][-1])
-
-    return selection 
-
 def selection_random(hours,n):
-    TIMESTAMPS = []    
+    previous = []    
 
     for _ in range(n):
         while True:
             try:
-                start = datetime(2017, randint(1, 12), randint(1, 31))
-                break
+                start = datetime(2017, randint(1, 12), randint(1, 31))                
             except ValueError:
                 pass
 
-        end = start + timedelta(hours=hours)
-        TIMESTAMPS.append((start.timestamp(), end.timestamp()))
+            allowed = True
+            for s, e in previous:
+                if start >= s and start <= e:
+                    allowed = False
+                    break
 
-    selection = [select_on_timestamp(*ts, None) for ts in TIMESTAMPS]
+            if not allowed:
+                continue
 
-    return selection
+            end = start + timedelta(hours=hours)
+            previous.append((start, end)) # all hours inside this window not possible for others 
+
+            break
+
+        yield select_on_timestamp(start.timestamp(), end.timestamp(), None)
 
 def selection_random_blocks(n):
-    selection = selection_random(1, n)
-
-    return [[x[0]] for x in selection]
+    for x in selection_random(1, n):
+        yield x[0]
 
 def save_result(name, wrapper):
     with open(SAVE_NAME % (name, "json"), "w") as f:
@@ -71,9 +70,9 @@ def save_result(name, wrapper):
         json.dump(dct, f, indent=4)
 
 def solve_hours(hours, n, name):
-    # selection = selection_sequential(hours,n)
-    selection = selection_random(hours, n)
-    # selection = selection_random_blocks(n)
+    # selection = list(selection_sequential(hours,n))
+    selection = list(selection_random(hours, n))
+    # selection = list(selection_random_blocks(n))
     pprint(selection)    
 
     print("Total number of blocks: ", sum(len(x) for x in selection))
