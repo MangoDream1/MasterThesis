@@ -1,0 +1,428 @@
+{
+    "10": {
+        "10": {
+            "gurobi": {
+                "resources": {
+                    "cpu_percent": 0.35100000000000003,
+                    "cpu_times": [
+                        0.7927970819999998,
+                        0.5500595259999997,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 8.87,
+                    "reduction": 0.21900000000000003,
+                    "result_cons": 0.02,
+                    "result_cost": 7.81,
+                    "start_cost": 9.45,
+                    "start_n_txs": 10.0
+                },
+                "was_cut": 0.0
+            },
+            "heuristics": {
+                "resources": {
+                    "cpu_percent": 0.11099999999999997,
+                    "cpu_times": [
+                        0.7935770869999997,
+                        0.5517755369999997,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 8.87,
+                    "reduction": 0.213,
+                    "result_cons": 0.0,
+                    "result_cost": 7.87,
+                    "start_cost": 9.45,
+                    "start_n_txs": 10.0
+                },
+                "was_cut": 0.0
+            }
+        },
+        "100": {
+            "gurobi": {
+                "resources": {
+                    "cpu_percent": 0.24900000000000003,
+                    "cpu_times": [
+                        5.177673190000002,
+                        1.556577978000001,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 10.0,
+                    "reduction": 0.9093000000000001,
+                    "result_cons": 0.0,
+                    "result_cost": 9.07,
+                    "start_cost": 60.88,
+                    "start_n_txs": 100.0
+                },
+                "was_cut": 0.0
+            },
+            "heuristics": {
+                "resources": {
+                    "cpu_percent": 0.11199999999999999,
+                    "cpu_times": [
+                        5.179077199000002,
+                        1.5584499900000008,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 10.0,
+                    "reduction": 0.9063,
+                    "result_cons": 0.0,
+                    "result_cost": 9.37,
+                    "start_cost": 60.88,
+                    "start_n_txs": 100.0
+                },
+                "was_cut": 0.0
+            }
+        },
+        "50": {
+            "gurobi": {
+                "resources": {
+                    "cpu_percent": 0.37699999999999995,
+                    "cpu_times": [
+                        2.378235245000001,
+                        1.0236785619999997,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 10.0,
+                    "reduction": 0.8172,
+                    "result_cons": 0.02,
+                    "result_cost": 9.14,
+                    "start_cost": 38.23,
+                    "start_n_txs": 50.0
+                },
+                "was_cut": 0.0
+            },
+            "heuristics": {
+                "resources": {
+                    "cpu_percent": 0.147,
+                    "cpu_times": [
+                        2.380107257000001,
+                        1.0258625759999997,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 10.0,
+                    "reduction": 0.8109999999999999,
+                    "result_cons": 0.0,
+                    "result_cost": 9.45,
+                    "start_cost": 38.23,
+                    "start_n_txs": 50.0
+                },
+                "was_cut": 0.0
+            }
+        },
+        "500": {
+            "gurobi": {
+                "resources": {
+                    "cpu_percent": 0.302,
+                    "cpu_times": [
+                        9.493752857000002,
+                        2.003520843,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 10.0,
+                    "reduction": 0.98198,
+                    "result_cons": 0.0,
+                    "result_cost": 9.01,
+                    "start_cost": 89.64,
+                    "start_n_txs": 500.0
+                },
+                "was_cut": 0.0
+            },
+            "heuristics": {
+                "resources": {
+                    "cpu_percent": 0.137,
+                    "cpu_times": [
+                        9.495624869000002,
+                        2.005080853,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 10.0,
+                    "reduction": 0.9813200000000001,
+                    "result_cons": 0.0,
+                    "result_cost": 9.34,
+                    "start_cost": 89.64,
+                    "start_n_txs": 500.0
+                },
+                "was_cut": 0.0
+            }
+        }
+    },
+    "25": {
+        "10": {
+            "gurobi": {
+                "resources": {
+                    "cpu_percent": 0.214,
+                    "cpu_times": [
+                        14.918687631999994,
+                        2.5687124659999996,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 14.15,
+                    "reduction": -0.08900000000000005,
+                    "result_cons": 0.04,
+                    "result_cost": 10.89,
+                    "start_cost": 9.96,
+                    "start_n_txs": 10.0
+                },
+                "was_cut": 0.0
+            },
+            "heuristics": {
+                "resources": {
+                    "cpu_percent": 0.11199999999999997,
+                    "cpu_times": [
+                        14.919155634999992,
+                        2.5707404789999995,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 14.15,
+                    "reduction": 0.014000000000000058,
+                    "result_cons": 0.0,
+                    "result_cost": 9.86,
+                    "start_cost": 9.96,
+                    "start_n_txs": 10.0
+                },
+                "was_cut": 0.0
+            }
+        },
+        "100": {
+            "gurobi": {
+                "resources": {
+                    "cpu_percent": 0.19583333333333336,
+                    "cpu_times": [
+                        29.709090441666667,
+                        3.7574574194444432,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 25.0,
+                    "reduction": 0.7540277777777777,
+                    "result_cons": 0.16666666666666666,
+                    "result_cost": 24.59722222222222,
+                    "start_cost": 92.23611111111111,
+                    "start_n_txs": 100.0
+                },
+                "was_cut": 0.28
+            },
+            "heuristics": {
+                "resources": {
+                    "cpu_percent": 0.05416666666666667,
+                    "cpu_times": [
+                        29.709090441666667,
+                        3.759624099999998,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 25.0,
+                    "reduction": 0.7376388888888888,
+                    "result_cons": 0.0,
+                    "result_cost": 26.23611111111111,
+                    "start_cost": 92.23611111111111,
+                    "start_n_txs": 100.0
+                },
+                "was_cut": 0.0
+            }
+        },
+        "50": {
+            "gurobi": {
+                "resources": {
+                    "cpu_percent": 0.12407407407407407,
+                    "cpu_times": [
+                        21.050890496296297,
+                        3.1226200166666676,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 24.64814814814815,
+                    "reduction": 0.5137037037037038,
+                    "result_cons": 0.1111111111111111,
+                    "result_cost": 24.314814814814813,
+                    "start_cost": 48.148148148148145,
+                    "start_n_txs": 50.0
+                },
+                "was_cut": 0.46
+            },
+            "heuristics": {
+                "resources": {
+                    "cpu_percent": 0.11481481481481481,
+                    "cpu_times": [
+                        21.052046059259258,
+                        3.125508924074075,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 24.64814814814815,
+                    "reduction": 0.4888888888888889,
+                    "result_cons": 0.0,
+                    "result_cost": 25.555555555555557,
+                    "start_cost": 48.148148148148145,
+                    "start_n_txs": 50.0
+                },
+                "was_cut": 0.0
+            }
+        },
+        "500": {
+            "gurobi": {
+                "resources": {
+                    "cpu_percent": 0.35200000000000004,
+                    "cpu_times": [
+                        38.99681797799999,
+                        4.332459772,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 25.0,
+                    "reduction": 0.95182,
+                    "result_cons": 0.0,
+                    "result_cost": 24.09,
+                    "start_cost": 338.23,
+                    "start_n_txs": 500.0
+                },
+                "was_cut": 0.0
+            },
+            "heuristics": {
+                "resources": {
+                    "cpu_percent": 0.11100000000000002,
+                    "cpu_times": [
+                        38.99931399399998,
+                        4.334331784000001,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 25.0,
+                    "reduction": 0.94788,
+                    "result_cons": 0.0,
+                    "result_cost": 26.06,
+                    "start_cost": 338.23,
+                    "start_n_txs": 500.0
+                },
+                "was_cut": 0.0
+            }
+        }
+    },
+    "50": {
+        "10": {
+            "gurobi": {
+                "resources": {
+                    "cpu_percent": 0.172,
+                    "cpu_times": [
+                        49.661982344000016,
+                        4.878463272000003,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 16.81,
+                    "reduction": -0.04499999999999993,
+                    "result_cons": 0.04,
+                    "result_cost": 10.45,
+                    "start_cost": 9.99,
+                    "start_n_txs": 10.0
+                },
+                "was_cut": 0.0
+            },
+            "heuristics": {
+                "resources": {
+                    "cpu_percent": 0.111,
+                    "cpu_times": [
+                        49.66291835000001,
+                        4.880491285000004,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 16.81,
+                    "reduction": 0.0009999999999999788,
+                    "result_cons": 0.0,
+                    "result_cost": 9.99,
+                    "start_cost": 9.99,
+                    "start_n_txs": 10.0
+                },
+                "was_cut": 0.0
+            }
+        },
+        "50": {
+            "gurobi": {
+                "resources": {
+                    "cpu_percent": 0.0,
+                    "cpu_times": [
+                        56.37096135,
+                        5.1948333,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 42.0,
+                    "reduction": 0.18,
+                    "result_cons": 0.0,
+                    "result_cost": 41.0,
+                    "start_cost": 49.0,
+                    "start_n_txs": 50.0
+                },
+                "was_cut": 0.8666666666666667
+            },
+            "heuristics": {
+                "resources": {
+                    "cpu_percent": 0.3,
+                    "cpu_times": [
+                        56.37096135,
+                        5.202633349999999,
+                        0.0,
+                        0.0
+                    ]
+                },
+                "result": {
+                    "n_actors": 42.0,
+                    "reduction": 0.11,
+                    "result_cons": 0.0,
+                    "result_cost": 44.5,
+                    "start_cost": 49.0,
+                    "start_n_txs": 50.0
+                },
+                "was_cut": 0.0
+            }
+        }
+    }
+}

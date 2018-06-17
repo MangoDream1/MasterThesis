@@ -1,0 +1,26 @@
+{
+    "0": {
+        "n_actors": 34303,
+        "start_n_txs": 36634,
+        "start_cost": 33432,
+        "bitcoin_txs": 7754,
+        "result_cost": 32939,
+        "result_cons": 0
+    },
+    "1": {
+        "n_actors": 42171,
+        "start_n_txs": 44967,
+        "start_cost": 39564,
+        "bitcoin_txs": 13538,
+        "result_cost": 39290,
+        "result_cons": 0
+    },
+    "2": {
+        "n_actors": 27366,
+        "start_n_txs": 34283,
+        "start_cost": 26637,
+        "bitcoin_txs": 7294,
+        "result_cost": 25420,
+        "result_cons": 0
+    }
+}
