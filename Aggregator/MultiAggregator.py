@@ -2,13 +2,16 @@ from Aggregator.GenericAggregator import GenericAggregator
 from utils.progress_bar import progress_bar
 
 from multiprocessing import Process, Queue, Pool
-from threading import Event
+from threading import Event, Thread
+import time
 import networkx as nx
 import numpy as np
 import scipy as sc
 
 class MultiAggregator(GenericAggregator):
-    def __init__(self, Aggregator, *args, result={}, pool_size=10, pool=None, progress=True, func=lambda agg: agg.iterate(), **kwargs):
+    def __init__(self, Aggregator, *args, result={}, pool_size=10, pool=None, 
+        progress=True, func=lambda agg: agg.iterate(), stop=False, **kwargs):
+        
         super().__init__(transaction_cost=1, balance_diff_multiplier=1)
         
         self.Aggregator = Aggregator
@@ -27,7 +30,7 @@ class MultiAggregator(GenericAggregator):
         self.final_stretch_event = Event()
 
         self._correction = False
-
+        self._stop = stop
 
         if not pool:
             self.pool = Pool(self.pool_size)
@@ -66,7 +69,7 @@ class MultiAggregator(GenericAggregator):
             i += 1
 
             self.pool.apply_async(self._single_process, 
-                (self.func, self.network, subgraph, self.Aggregator, *self._args,), 
+                (self.func, self.network, subgraph, self.Aggregator, self._stop, *self._args,), 
                 self._kwargs, handle_process, error_process)
         
         if self.progress:
@@ -88,7 +91,7 @@ class MultiAggregator(GenericAggregator):
         super().iterate()      
 
     @staticmethod
-    def _single_process(func, graph, subgraph, Aggregator, *args, **kwargs):         
+    def _single_process(func, graph, subgraph, Aggregator, stop, *args, **kwargs):         
         subgraph = graph.subgraph(subgraph.nodes)
         nodes = np.array(subgraph.nodes())
 
@@ -97,6 +100,33 @@ class MultiAggregator(GenericAggregator):
         agg = Aggregator(*args, **kwargs)
         agg.set_init_variables(matrix, subgraph)
 
-        func(agg)
+        if stop:
+            finished_event = Event()
+
+            def cut_off(event):
+                wait_time = 60*30 # if hung after 30 min stop
+
+                while wait_time != 0:
+                    time.sleep(1)
+
+                    if event.is_set():
+                        break
+
+                    wait_time -= 1
+
+                if not event.is_set():
+                    print("\n---------STOPPED----------\n")
+                    event.set()
+
+            def wrap(func, args, event):
+                func(*args)
+                event.set()
+
+            Thread(target=cut_off, args=(finished_event,)).start()
+            Thread(target=wrap, args=(func, (agg,), finished_event,)).start()
+
+            finished_event.wait()
+        else:
+            func(agg)
 
         return nodes, agg.matrix

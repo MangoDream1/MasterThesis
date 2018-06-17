@@ -81,7 +81,7 @@ def solve_hours(hours, n, name):
 
     pool = Pool()
     
-    wrapper = AggregatorWrapper(MultiAggregator, DividedLinearAggregator, func=method, pool=pool)
+    wrapper = AggregatorWrapper(MultiAggregator, DividedLinearAggregator, func=method, pool=pool, stop=True)
     wrapper.create_aggregators_from_selections(selection)
 
     # actors = [hex(x) for x in range(1000)]
