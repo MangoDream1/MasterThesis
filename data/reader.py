@@ -26,21 +26,25 @@ def select_on_timestamp(lbound, ubound, size):
 
 def read_lines_selection(selection, exclude_miner_receive=False):
     for fname in selection:
-        block_number, timestamp, _, _ = fname.split("_")
-        path = os.path.join(SAVE_DIR, fname)
-        
-        if exclude_miner_receive:
-            last_line = subprocess.check_output(["tail", "-1", path]) # last line always miner generation line
-            miner = last_line.decode("utf8").strip().split(",")[1]
+        try:
+            block_number, timestamp, _, _ = fname.split("_")
+            path = os.path.join(SAVE_DIR, fname)
+            
+            if exclude_miner_receive:
+                last_line = subprocess.check_output(["tail", "-1", path]) # last line always miner generation line
+                miner = last_line.decode("utf8").strip().split(",")[1]
 
-        with open(path, "r") as f:
-            reader = csv.reader(f)
+            with open(path, "r") as f:
+                reader = csv.reader(f)
 
-            for line in reader:
-                if exclude_miner_receive and line[1] == miner:
-                    continue
+                for line in reader:
+                    if exclude_miner_receive and line[1] == miner:
+                        continue
 
-                yield line + [timestamp, block_number]
+                    yield line + [timestamp, block_number]
+        except:
+            print("Error found: ", fname)
+            continue
 
 def create_transactions(selection, **kwargs):
     for line in read_lines_selection(selection, **kwargs):
