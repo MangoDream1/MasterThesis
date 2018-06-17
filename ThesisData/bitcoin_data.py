@@ -37,13 +37,14 @@ def selection_random(hours,n):
     for _ in range(n):
         while True:
             try:
-                start = datetime(2017, randint(1, 12), randint(1, 31))                
+                start = datetime(2017, randint(1, 12), randint(1, 31), randint(1, 23))                
             except ValueError:
                 pass
 
+            # all hours inside this window not possible for others
             allowed = True
             for s, e in previous:
-                if start >= s and start <= e:
+                if start >= s and start < e:
                     allowed = False
                     break
 
@@ -51,7 +52,7 @@ def selection_random(hours,n):
                 continue
 
             end = start + timedelta(hours=hours)
-            previous.append((start, end)) # all hours inside this window not possible for others 
+            previous.append((start, end))  
 
             break
 
