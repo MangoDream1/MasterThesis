@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     # meta = 24 * 30
     # n = [int(meta/size) for size in sizes]
-    n = [50 for size in sizes]
+    n = [100 for size in sizes]
 
     pb = progress_bar(0, sum(n))
     p = 0
