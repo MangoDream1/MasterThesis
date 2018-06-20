@@ -122,18 +122,18 @@ class GenericAggregator:
         log_data = np.array(self.log_data)
 
         plt.subplot(131).title.set_text("Transaction cost reduction")
-        plt.ylabel("Iteration cost")
-        plt.xlabel("Transactions")
+        plt.xlabel("Iteration cost")
+        plt.ylabel("Transaction cost")
         plt.plot(log_data[:, 0])
 
         plt.subplot(132).title.set_text("Constraint violation reduction")
-        plt.ylabel("Iterations")
-        plt.xlabel("Constraint violation")
+        plt.xlabel("Iterations")
+        plt.ylabel("Constraint violation")
         plt.plot(log_data[:, 1])
 
         plt.subplot(133).title.set_text("Combined cost reduction")
-        plt.ylabel("Iterations")
-        plt.xlabel("Combined cost")
+        plt.xlabel("Iterations")
+        plt.ylabel("Combined cost")
         plt.plot(log_data[:, 2])
 
         if show:
