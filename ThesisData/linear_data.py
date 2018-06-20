@@ -3,6 +3,7 @@ import time
 import psutil
 from threading import Event, Thread
 import json
+import os
 
 from Objects.SimulatedTransaction import SimulatedTransaction
 from AggregatorWrapper.AggregatorWrapper import AggregatorWrapper
@@ -97,35 +98,50 @@ def fix_dct(dct):
     return {k: int(v) for k, v in dct.items() if v != None}
 
 if __name__ == '__main__':
-    ACTORS_SIZES = [10, 25, 50]
-    TX_SIZES     = [10, 50, 100, 500]
-    n_iterations = 100
+    ACTORS_SIZES = ["10", "25", "50"]
+    TX_SIZES     = ["10", "50", "100", "500"]
+    n_iterations = 50
+
+    save_file = SAVE_NAME % ("linear_data", "json")
 
     data = {}
+
+    if os.path.isfile(save_file):
+        with open(save_file, "r") as f:
+            data = json.load(f)
 
     pb = progress_bar(0, len(ACTORS_SIZES) * len(TX_SIZES) * n_iterations)
     progress = 0
 
     for n_actors in ACTORS_SIZES:
-        data[n_actors] = {}
+        if n_actors not in data:
+            data[n_actors] = {}            
+
         for n_txs in TX_SIZES:
-            data[n_actors][n_txs] = {}
+            if n_txs not in data[n_actors]:
+                data[n_actors][n_txs] = {}
+
+            done = data[n_actors][n_txs].keys()
+
             for i in range(n_iterations):
                 pb(progress)
+                progress += 1
+
+                if str(i) in done:
+                    continue
                 
-                lin_result, mul_result = main(n_actors, n_txs)
+                lin_result, mul_result = main(int(n_actors), int(n_txs))
 
                 lin_result["result"] = fix_dct(lin_result["result"])
                 mul_result["result"] = fix_dct(mul_result["result"])
 
-                data[n_actors][n_txs][i] = {}
-                data[n_actors][n_txs][i]["gurobi"] = lin_result
-                data[n_actors][n_txs][i]["heuristics"] = mul_result
+                data[n_actors][n_txs][str(i)] = {}
+                data[n_actors][n_txs][str(i)]["gurobi"] = lin_result
+                data[n_actors][n_txs][str(i)]["heuristics"] = mul_result
 
-                with open(SAVE_NAME % ("linear_data", "json"), "w") as f:
+                with open(save_file, "w") as f:
                     json.dump(data, f, indent=4, sort_keys=True)
 
-                progress += 1
 
 
     
